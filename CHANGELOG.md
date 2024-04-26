@@ -1,3 +1,10 @@
+## 1.0.0 (2024-04-26)
+
+
+### Features
+
+* experiment setup ([6c84071](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/6c840713b99aaaff8718f1bbd002a5bc452467db))
+
 ## [1.2.1](https://github.com/DanySK/alchemist-experiments-bootstrap/compare/1.2.0...1.2.1) (2024-02-09)
 
 

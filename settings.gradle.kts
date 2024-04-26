@@ -8,7 +8,8 @@ develocity {
         termsOfUseUrl = "https://gradle.com/terms-of-service"
         termsOfUseAgree = "yes"
         uploadInBackground = !System.getenv("CI").toBoolean()
+        publishing.onlyIf { it.buildResult.failures.isNotEmpty() }
     }
 }
 
-rootProject.name = "alchemist-experiments-bootstrap"
+rootProject.name = "experiments-2024-fgcs-pulverization-local-reconfiguration"

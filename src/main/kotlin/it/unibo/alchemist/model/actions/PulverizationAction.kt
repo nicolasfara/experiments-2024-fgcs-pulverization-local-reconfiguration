@@ -29,12 +29,14 @@ class PulverizationAction<T>(
     @Suppress("UNCHECKED_CAST")
     override fun execute() {
         val currentTime = environment.simulation.time.toDouble()
-        val smartphoneConsumption =
-            smartphoneConsumptionModel.getConsumptionSinceLastUpdate(currentTime)
-        val smartphoneNewCapacity = currentSmartphoneCapacity() - toMilliAmpsPerHour(smartphoneConsumption)
-        node.setConcentration(SmartphoneBatteryCapacity, smartphoneNewCapacity as T)
-        node.setConcentration(SmartphonePercentage, (smartphoneNewCapacity / 4500.0) as T)
-        if (hasWearable) {
+        if (currentSmartphoneCapacity() > 0.0) {
+            val smartphoneConsumption =
+                smartphoneConsumptionModel.getConsumptionSinceLastUpdate(currentTime)
+            val smartphoneNewCapacity = currentSmartphoneCapacity() - toMilliAmpsPerHour(smartphoneConsumption)
+            node.setConcentration(SmartphoneBatteryCapacity, smartphoneNewCapacity as T)
+            node.setConcentration(SmartphonePercentage, (smartphoneNewCapacity / 4500.0) as T)
+        }
+        if (hasWearable && currentWearableCapacity() > 0.0) {
             val wearableConsumption =
                 wearableConsumptionModel?.getConsumptionSinceLastUpdate(currentTime) ?: 0.0
             val wearableNewCapacity = currentWearableCapacity() - toMilliAmpsPerHour(wearableConsumption)

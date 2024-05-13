@@ -1,0 +1,172 @@
+incarnation: protelis
+
+variables:
+  Seed: &Seed
+    min: 0
+    max: 1
+    step: 1
+    default: 0
+  ConnectionDistance: &ConnectionDistance
+    formula: 100
+  MaxLatitude:
+    formula: 44.14795317094557
+  MinLatitude: &MinLatitude
+    formula: 44.13340676305022
+  MaxLongitude:
+    formula: 12.267570291912632
+  MinLongitude: &MinLongitude
+    formula: 12.235568921311268
+  LatitudeSpace: &LatitudeSpace
+    formula: MaxLatitude - MinLatitude
+  LongitudeSpace: &LongitudeSpace
+    formula: MaxLongitude - MinLongitude
+  PoiCount: &PoiCount
+    formula: 15
+  MaxTimeInPoi: &MaxTimeInPoi
+    formula: 300.0
+  SimulationTime: &SimulationTime
+    formula: 21600.0 # 6 hours
+  PeopleWithSmartphoneOnlyPercentage:
+    formula: 0.7
+  SmartphoneEpi: &SmartphoneEpi
+    formula: 5.50E-9 # nJoules
+  WearableEpi: &WearableEpi
+    formula: 1.10E-9 # nJoules [Pixel Watch 2 -- Qualcomm SW5100]
+  CloudEpi: &CloudEpi
+    formula: 100.0E-9 #n Joules
+  WearableOsInstructions: &WearableOsInstructions
+    formula: 90_000 # Instructions
+  SmartphoneOsInstructions: &SmartphoneOsInstructions
+    formula: 500_000 # Instructions
+  CloudOsInstructions: &CloudOsInstructions
+    formula: 900_000 # Instructions
+  BehaviorInstructions:
+    formula: 290_500_000 # Instructions !!!!!! FIXME
+  GpsSensorInstructions:
+    formula: 50_000_000 # Instructions !!!!!! FIXME
+  CommunicationInstructions:
+    formula: 40_000_000 # Instructions !!!!!! FIXME
+  SmartphoneStartupComponents: &SmartphoneStartupComponents
+    language: kotlin
+    formula: |
+      import it.unibo.alchemist.model.*
+      setOf(Behavior(BehaviorInstructions), GpsSensor(GpsSensorInstructions), Communication(CommunicationInstructions))
+  SmartphoneBatteryCapacity: &SmartphoneBatteryCapacity
+    formula: 4500.0 # mAh [Oneplus 9]
+  WearableBatteryCapacity: &WearableBatteryCapacity
+    formula: 306.0 # mAh [Pixel Watch 2]
+  # --------------- Simulation Variables ---------------
+  DeviceCount:
+    type: ArbitraryVariable
+    parameters: [100, [100, 300]]
+  MinThreshold: &MinThreshold
+    formula: 0.0
+  MaxThreshold: &MaxThreshold
+    formula: 101.0
+  # -----------------------------------------------------
+  PeopleWithSmartphoneAndWearable: &PeopleWithSmartphoneAndWearable
+    language: kotlin
+    formula: |
+      import kotlin.math.floor
+      floor(DeviceCount * (1.0 - PeopleWithSmartphoneOnlyPercentage))
+  PeopleWithSmartphoneOnly: &PeopleWithSmartphoneOnly
+    language: kotlin
+    formula: DeviceCount - PeopleWithSmartphoneAndWearable
+
+seeds:
+  scenario: *Seed
+  simulation: *Seed
+
+network-model:
+  type: ConnectWithinDistance
+  parameters: [*ConnectionDistance]
+
+_programs:
+  configureNextPoi: &configureNextPoi
+    - time-distribution: 0.1
+      type: Event
+      actions:
+        - type: ConfigureNextPoi
+          parameters: [*MaxTimeInPoi] # max 5 minutes in PoI
+
+  moveToTarget: &moveToTarget
+    - time-distribution: 0.5
+      type: Event
+      actions:
+        - type: TargetMapWalker
+          parameters: [MovementTarget, 1.4]
+
+  smartphonePulverization: &smartphonePulverization
+    - time-distribution: 1.0
+      type: Event
+      actions:
+        - type: PulverizationAction
+          parameters: [*MinThreshold, *MaxThreshold]
+
+  cloudPulverization: &cloudPulverization
+    - time-distribution: 1.0
+      type: Event
+      actions:
+        - type: PulverizationCloudAction
+          parameters: [ ]
+
+deployments:
+  # People with smartphone only
+  - type: Rectangle
+    parameters: [*PeopleWithSmartphoneOnly, *MinLatitude, *MinLongitude, *LatitudeSpace, *LongitudeSpace]
+    programs:
+      - *moveToTarget
+      - *configureNextPoi
+      - *smartphonePulverization
+    properties:
+      - type: SmartphoneConsumptionModel
+        parameters: [*SmartphoneEpi, *SmartphoneOsInstructions, *SmartphoneStartupComponents]
+    contents:
+      - molecule: Person
+        concentration: true
+      - molecule: SmartphoneBatteryCapacity
+        concentration: *SmartphoneBatteryCapacity
+  # People with smartphone and wearable
+  - type: Rectangle
+    parameters: [ *PeopleWithSmartphoneAndWearable, *MinLatitude, *MinLongitude, *LatitudeSpace, *LongitudeSpace ]
+    programs:
+      - *moveToTarget
+      - *configureNextPoi
+      - *smartphonePulverization
+    properties:
+      - type: SmartphoneConsumptionModel
+        parameters: [*SmartphoneEpi, *SmartphoneOsInstructions, *SmartphoneStartupComponents]
+      - type: WearableConsumptionModel
+        parameters: [*WearableEpi, *WearableOsInstructions]
+    contents:
+      - molecule: Person
+        concentration: true
+      - molecule: SmartphoneBatteryCapacity
+        concentration: *SmartphoneBatteryCapacity
+      - molecule: WearableBatteryCapacity
+        concentration: *WearableBatteryCapacity
+  # Cloud instances
+  - type: Point
+    parameters: [44.14895317094557, 12.268570291912632]
+    programs:
+      - *cloudPulverization
+    properties:
+      - type: CloudConsumptionModel
+        parameters: [*CloudEpi, *CloudOsInstructions]
+    contents:
+      - molecule: CloudInstance
+        concentration: true
+  # Displace the PoIs into the map
+  - type: Rectangle
+    parameters: [*PoiCount, *MinLatitude, *MinLongitude, *LatitudeSpace, *LongitudeSpace]
+    contents:
+      - molecule: PoI
+        concentration: true
+
+environment:
+  type: OSMEnvironment
+  parameters: ["cesena.pbf", true, true]
+
+terminate:
+  type: AfterTime
+  parameters: *SimulationTime

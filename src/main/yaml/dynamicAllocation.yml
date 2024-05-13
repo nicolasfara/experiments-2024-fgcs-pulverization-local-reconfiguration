@@ -25,7 +25,7 @@ variables:
   MaxTimeInPoi: &MaxTimeInPoi
     formula: 300.0
   SimulationTime: &SimulationTime
-    formula: 1800.0
+    formula: 21600.0 # 6 hours
   PeopleWithSmartphoneOnlyPercentage:
     formula: 0.7
   SmartphoneEpi: &SmartphoneEpi
@@ -35,17 +35,17 @@ variables:
   CloudEpi: &CloudEpi
     formula: 100.0E-9 #n Joules
   WearableOsInstructions: &WearableOsInstructions
-    formula: 70_000 # Instructions
+    formula: 90_000 # Instructions
   SmartphoneOsInstructions: &SmartphoneOsInstructions
-    formula: 150_000 # Instructions
+    formula: 500_000 # Instructions
   CloudOsInstructions: &CloudOsInstructions
-    formula: 300_000 # Instructions
+    formula: 900_000 # Instructions
   BehaviorInstructions:
-    formula: 49_500_000 # Instructions !!!!!! FIXME
+    formula: 290_500_000 # Instructions !!!!!! FIXME
   GpsSensorInstructions:
-    formula: 1_000_000 # Instructions !!!!!! FIXME
+    formula: 50_000_000 # Instructions !!!!!! FIXME
   CommunicationInstructions:
-    formula: 2_000_000 # Instructions !!!!!! FIXME
+    formula: 40_000_000 # Instructions !!!!!! FIXME
   SmartphoneStartupComponents: &SmartphoneStartupComponents
     language: kotlin
     formula: |

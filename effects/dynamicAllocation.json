@@ -186,7 +186,7 @@
     "red": {
       "max": 255,
       "min": 0,
-      "val": 0
+      "val": 255
     },
     "blue": {
       "max": 255,
@@ -196,7 +196,7 @@
     "green": {
       "max": 255,
       "min": 0,
-      "val": 255
+      "val": 0
     },
     "alpha": {
       "max": 255,
@@ -218,12 +218,12 @@
     "molPropertyFilter": true,
     "property": "",
     "writingPropertyValue": false,
-    "c": "RED",
-    "reverse": true,
+    "c": "HUE",
+    "reverse": false,
     "propoom": {
       "max": 10,
       "min": -10,
-      "val": 0
+      "val": 1
     },
     "minprop": {
       "max": 10,
@@ -236,7 +236,7 @@
       "val": 1
     },
     "colorCache": {
-      "value": -16711936
+      "value": -65536
     }
   }
 ]

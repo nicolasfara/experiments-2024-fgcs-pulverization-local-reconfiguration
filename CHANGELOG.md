@@ -1,3 +1,20 @@
+## [1.2.0](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.1.0...1.2.0) (2024-05-13)
+
+
+### Features
+
+* setup pulverization middleware and power consumption ([103dc02](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/103dc02f55947c55152e4bd069ee44ee473ca034))
+
+
+### Build and continuous integration
+
+* minor build updates ([835f106](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/835f1064752e5cec18c9eda3dfb65ea8ca9c373d))
+
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.1.0 [skip ci] ([39160a7](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/39160a707e0c38a798a78a388a03ed9f9e1dc195))
+
 ## [1.1.0](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.0.0...1.1.0) (2024-05-13)
 
 

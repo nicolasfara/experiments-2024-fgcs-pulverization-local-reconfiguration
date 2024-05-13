@@ -1,11 +1,13 @@
 incarnation: protelis
 
 variables:
-  seed: &seed
+  Seed: &Seed
     min: 0
     max: 1
     step: 1
     default: 0
+  ConnectionDistance: &ConnectionDistance
+    formula: 100
   MaxLatitude:
     formula: 44.14795317094557
   MinLatitude: &MinLatitude
@@ -18,27 +20,48 @@ variables:
     formula: MaxLatitude - MinLatitude
   LongitudeSpace: &LongitudeSpace
     formula: MaxLongitude - MinLongitude
-  DeviceCount: &DeviceCount
-    type: ArbitraryVariable
-    parameters: [ 100, [ 100, 300, 1000 ] ]
   PoiCount: &PoiCount
     formula: 15
+  MaxTimeInPoi: &MaxTimeInPoi
+    formula: 300.0
+  SimulationTime: &SimulationTime
+    formula: 1800.0
+  PeopleWithSmartphoneOnlyPercentage:
+    formula: 0.7
+  SmartphoneEpi: &SmartphoneEpi
+    formula: 0.55 # Joules
+  WearableEpi: &WearableEpi
+    formula: 0.11 # Joules [Pixel Watch 2 -- Qualcomm SW5100]
+  CloudEpi: &CloudEpi
+    formula: 10.0 # Joules
+  # --------------- Simulation Variables ---------------
+  DeviceCount:
+    type: ArbitraryVariable
+    parameters: [300, [100, 300]]
+  PeopleWithSmartphoneAndWearable: &PeopleWithSmartphoneAndWearable
+    language: kotlin
+    formula: |
+      import kotlin.math.floor
+      floor(DeviceCount * (1.0 - PeopleWithSmartphoneOnlyPercentage))
+  PeopleWithSmartphoneOnly: &PeopleWithSmartphoneOnly
+    language: kotlin
+    formula: DeviceCount - PeopleWithSmartphoneAndWearable
 
 seeds:
-  scenario: *seed
-  simulation: *seed
+  scenario: *Seed
+  simulation: *Seed
 
 network-model:
   type: ConnectWithinDistance
-  parameters: [100]
+  parameters: [*ConnectionDistance]
 
 _programs:
   configureNextPoi: &configureNextPoi
-    - time-distribution: 1
+    - time-distribution: 0.1
       type: Event
       actions:
         - type: ConfigureNextPoi
-          parameters: [300.0] # max 5 minutes in PoI
+          parameters: [*MaxTimeInPoi] # max 5 minutes in PoI
 
   moveToTarget: &moveToTarget
     - time-distribution: 0.5
@@ -47,18 +70,55 @@ _programs:
         - type: TargetMapWalker
           parameters: [MovementTarget, 1.4]
 
+  smartphonePulverization: &smartphonePulverization
+    - time-distribution: 1.0
+      type: Event
+      actions:
+        - type: PulverizationAction
+          parameters: [ ]
+
+  cloudPulverization: &cloudPulverization
+    - time-distribution: 1.0
+      type: Event
+      actions:
+        - type: PulverizationCloudAction
+          parameters: [ ]
+
 deployments:
-  # Displace the devices into the map
+  # People with smartphone only
   - type: Rectangle
-    parameters: [*DeviceCount, *MinLatitude, *MinLongitude, *LatitudeSpace, *LongitudeSpace]
+    parameters: [*PeopleWithSmartphoneOnly, *MinLatitude, *MinLongitude, *LatitudeSpace, *LongitudeSpace]
     programs:
       - *moveToTarget
       - *configureNextPoi
+      - *smartphonePulverization
+    properties:
+      - type: SmartphoneConsumptionModel
+        parameters: [*SmartphoneEpi]
     contents:
       - molecule: Person
         concentration: true
+  # People with smartphone and wearable
+  - type: Rectangle
+    parameters: [ *PeopleWithSmartphoneAndWearable, *MinLatitude, *MinLongitude, *LatitudeSpace, *LongitudeSpace ]
+    programs:
+      - *moveToTarget
+      - *configureNextPoi
+      - *smartphonePulverization
+    properties:
+      - type: SmartphoneConsumptionModel
+        parameters: [*SmartphoneEpi]
+      - type: WearableConsumptionModel
+        parameters: [*WearableEpi]
+    contents:
+      - molecule: Person
+        concentration: true
+  # Cloud instances
   - type: Point
     parameters: [44.14895317094557, 12.268570291912632]
+    properties:
+      - type: CloudConsumptionModel
+        parameters: [*CloudEpi]
     contents:
       - molecule: CloudInstance
         concentration: true
@@ -75,4 +135,4 @@ environment:
 
 terminate:
   type: AfterTime
-  parameters: 1800
+  parameters: *SimulationTime

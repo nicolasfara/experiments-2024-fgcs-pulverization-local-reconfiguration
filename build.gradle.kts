@@ -119,7 +119,7 @@ File(rootProject.rootDir.path + "/src/main/yaml").listFiles()
                 """
                     launcher: {
                         parameters: {
-                            batch: [ seed, spacing, error ],
+                            batch: [ DeviceCount, Seed ],
                             showProgress: true,
                             autoStart: true,
                             parallelism: $threadCount,

@@ -6,68 +6,73 @@ variables:
     max: 1
     step: 1
     default: 0
-  spacing: &spacing
+  MaxLatitude:
+    formula: 44.14795317094557
+  MinLatitude: &MinLatitude
+    formula: 44.13340676305022
+  MaxLongitude:
+    formula: 12.267570291912632
+  MinLongitude: &MinLongitude
+    formula: 12.235568921311268
+  LatitudeSpace: &LatitudeSpace
+    formula: MaxLatitude - MinLatitude
+  LongitudeSpace: &LongitudeSpace
+    formula: MaxLongitude - MinLongitude
+  DeviceCount: &DeviceCount
     type: ArbitraryVariable
-    parameters: [0.25, [0.25, 0.5]]
-  error: &error
-    type: ArbitraryVariable
-    parameters: [0.1, [0.1, 0.2]]
+    parameters: [ 100, [ 100, 300, 1000 ] ]
+  PoiCount: &PoiCount
+    formula: 15
 
 seeds:
   scenario: *seed
   simulation: *seed
 
-launcher:
-  parameters:
-    batch: [seed, spacing, error]
-
 network-model:
   type: ConnectWithinDistance
-  parameters: [0.5]
+  parameters: [100]
 
-_gradient: &gradient
-  - time-distribution: 1
-    # Writing Protelis programs within a YAML file is a bad experience
-    # (some characters need escaping, no syntax highlight, no code suggestions...)
-    # We recommend using the Protelis Eclipse plugin to write your code, then
-    # Loading the code as a module within Alchemist
-    # In order to run this example, make sure that src/main/protelis is part of
-    # your classpath (the Gradle script is already properly configured).
-    program: org:protelis:tutorial:distanceTo
-  - program: send
+_programs:
+  configureNextPoi: &configureNextPoi
+    - time-distribution: 1
+      type: Event
+      actions:
+        - type: ConfigureNextPoi
+          parameters: [300.0] # max 5 minutes in PoI
+
+  moveToTarget: &moveToTarget
+    - time-distribution: 0.5
+      type: Event
+      actions:
+        - type: TargetMapWalker
+          parameters: [MovementTarget, 1.4]
 
 deployments:
-  type: Grid
-  parameters: [-5, -5, 5, 5, *spacing, *spacing, *error, *error]
-  contents:
-    - in:
-        type: Rectangle
-        parameters: [-6, -6, 2, 2]
-      molecule: source
-      concentration: true
-  programs: *gradient
+  # Displace the devices into the map
+  - type: Rectangle
+    parameters: [*DeviceCount, *MinLatitude, *MinLongitude, *LatitudeSpace, *LongitudeSpace]
+    programs:
+      - *moveToTarget
+      - *configureNextPoi
+    contents:
+      - molecule: Person
+        concentration: true
+  - type: Point
+    parameters: [44.14895317094557, 12.268570291912632]
+    contents:
+      - molecule: CloudInstance
+        concentration: true
+  # Displace the PoIs into the map
+  - type: Rectangle
+    parameters: [*PoiCount, *MinLatitude, *MinLongitude, *LatitudeSpace, *LongitudeSpace]
+    contents:
+      - molecule: PoI
+        concentration: true
 
-export:
-#  - type: MongoDBExporter
-#    parameters:
-#      uri: mongodb://localhost:27017
-#      dbName: simulation
-#    data:
-#      - time
-#      - molecule: "org:protelis:tutorial:distanceTo"
-#        aggregators: [mean, min, max]
-#        value-filter: onlyfinite
-  - type: CSVExporter
-    parameters:
-      fileNameRoot: simulation
-      interval: 1
-      exportPath: data
-    data:
-      - time
-      - molecule: "org:protelis:tutorial:distanceTo"
-        aggregators: [mean, min, max]
-        value-filter: onlyfinite
+environment:
+  type: OSMEnvironment
+  parameters: ["cesena.pbf", true, true]
 
 terminate:
   type: AfterTime
-  parameters: 150
+  parameters: 1800

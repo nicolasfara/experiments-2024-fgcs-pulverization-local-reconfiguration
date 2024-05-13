@@ -1,3 +1,15 @@
+## [1.3.0](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.2.0...1.3.0) (2024-05-13)
+
+
+### Features
+
+* implement discharge over time with fixed components allocation ([05f26e1](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/05f26e142acbbce9c07756695db7dc89c685ed37))
+
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.2.0 [skip ci] ([94f71cb](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/94f71cb81680afe07b0fefdd2b94b80f4b98e9ab))
+
 ## [1.2.0](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.1.0...1.2.0) (2024-05-13)
 
 

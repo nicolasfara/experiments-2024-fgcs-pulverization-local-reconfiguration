@@ -16,6 +16,8 @@ class PulverizationAction<T>(
 ) : AbstractLocalAction<T>(node) {
     private val SmartphoneBatteryCapacity by molecule()
     private val WearableBatteryCapacity by molecule()
+    private val SmartphonePercentage by molecule()
+    private val WearablePercentage by molecule()
     private val smartphoneConsumptionModel: SmartphoneConsumptionModel<*> by lazy {
         node.properties.filterIsInstance<SmartphoneConsumptionModel<*>>().first()
     }
@@ -31,11 +33,13 @@ class PulverizationAction<T>(
             smartphoneConsumptionModel.getConsumptionSinceLastUpdate(currentTime)
         val smartphoneNewCapacity = currentSmartphoneCapacity() - toMilliAmpsPerHour(smartphoneConsumption)
         node.setConcentration(SmartphoneBatteryCapacity, smartphoneNewCapacity as T)
+        node.setConcentration(SmartphonePercentage, (smartphoneNewCapacity / 4500.0) as T)
         if (hasWearable) {
             val wearableConsumption =
                 wearableConsumptionModel?.getConsumptionSinceLastUpdate(currentTime) ?: 0.0
             val wearableNewCapacity = currentWearableCapacity() - toMilliAmpsPerHour(wearableConsumption)
             node.setConcentration(WearableBatteryCapacity, wearableNewCapacity as T)
+            node.setConcentration(WearablePercentage, (wearableNewCapacity / 306.0) as T)
         }
     }
 

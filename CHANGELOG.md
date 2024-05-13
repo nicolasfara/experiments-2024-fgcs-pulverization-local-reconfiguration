@@ -1,3 +1,15 @@
+## [1.5.0](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.4.1...1.5.0) (2024-05-13)
+
+
+### Features
+
+* initialize random battery capacity ([11d0683](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/11d0683c58332314643b1f2d2103ceabcff2168f))
+
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.4.1 [skip ci] ([b23e9b7](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/b23e9b71423150ab9d369f0b673bdb692818ebc9))
+
 ## [1.4.1](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.4.0...1.4.1) (2024-05-13)
 
 

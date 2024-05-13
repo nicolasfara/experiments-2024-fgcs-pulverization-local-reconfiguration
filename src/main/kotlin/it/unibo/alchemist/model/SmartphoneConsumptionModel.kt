@@ -1,9 +1,14 @@
 package it.unibo.alchemist.model
 
-class SmartphoneConsumptionModel<T>(
+import org.apache.commons.math3.random.RandomGenerator
+
+class SmartphoneConsumptionModel<T> constructor(
+    random: RandomGenerator,
     override val node: Node<T>,
-    override val deviceEnergyPerInstruction: Double
-) : ConsumptionModel<T>() {
+    override val deviceEnergyPerInstruction: Double,
+    osInstructions: Int,
+    startingComponents: Iterable<Component>,
+) : ConsumptionModel<T>(random, osInstructions, startingComponents.toSet()) {
     override fun cloneOnNewNode(node: Node<T>): NodeProperty<T> {
         TODO("Not yet implemented")
     }

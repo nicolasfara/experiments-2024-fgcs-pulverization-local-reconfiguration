@@ -1,6 +1,5 @@
 package it.unibo.alchemist.utils
 
-import it.unibo.alchemist.model.Molecule
 import it.unibo.alchemist.model.molecules.SimpleMolecule
 import kotlin.properties.ReadOnlyProperty
 

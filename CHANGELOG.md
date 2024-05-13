@@ -1,3 +1,18 @@
+## [1.1.0](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.0.0...1.1.0) (2024-05-13)
+
+
+### Features
+
+* implement movement to PoI ([6d206eb](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/6d206ebb7412247055b1c83ff9916fb20f17513b))
+
+
+### General maintenance
+
+* change renovate base config ([2f0cafa](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/2f0cafaa4cf217f0a67071f292e7ec1679b00d16))
+* **effects:** simulation effect creation ([d25565b](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/d25565b87a88d4689044ebdeb1a8ec46c7bb7fbb))
+* **release:** update gradle.properties .env versions to 1.0.0 [skip ci] ([8393c7d](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/8393c7dfb30b4d0852f6839ff4c6308c9c1f513e))
+* **resources:** add cesena map ([6dbeb19](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/6dbeb19a97f762715530c5fbc21add2f17feef3f))
+
 ## 1.0.0 (2024-04-26)
 
 

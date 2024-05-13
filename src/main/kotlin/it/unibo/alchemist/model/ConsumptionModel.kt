@@ -23,6 +23,11 @@ abstract class ConsumptionModel<T>(
     abstract val deviceEnergyPerInstruction: Double
 
     /**
+     * Get the active components executed by this [node].
+     */
+    fun getActiveComponents(): Set<Component> = activeComponents
+
+    /**
      * Specify that the given [component] is executed by this [node].
      */
     fun setActiveComponent(component: Component) {

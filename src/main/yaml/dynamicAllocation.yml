@@ -65,6 +65,9 @@ variables:
   MaxThreshold: &MaxThreshold
     type: ArbitraryVariable
     parameters: [80.0, [60.0, 80.0]]
+  SwapPolicy: &SwapPolicy
+    type: ArbitraryVariable
+    parameters: [discharge, [discharge, interval]] # swap when discharged, or at fixed intervals (5% of battery each)
   # -----------------------------------------------------
   PeopleWithSmartphoneAndWearable: &PeopleWithSmartphoneAndWearable
     language: kotlin
@@ -103,7 +106,7 @@ _programs:
       type: Event
       actions:
         - type: PulverizationAction
-          parameters: [*MinThreshold, *MaxThreshold]
+          parameters: [*MinThreshold, *MaxThreshold, *SwapPolicy]
 
   cloudPulverization: &cloudPulverization
     - time-distribution: 1.0

@@ -63,6 +63,10 @@ variables:
     formula: 0.0
   MaxThreshold: &MaxThreshold
     formula: 101.0
+  SwapPolicy: &SwapPolicy
+    language: kotlin
+    formula: |
+      """none"""
   # -----------------------------------------------------
   PeopleWithSmartphoneAndWearable: &PeopleWithSmartphoneAndWearable
     language: kotlin
@@ -101,7 +105,7 @@ _programs:
       type: Event
       actions:
         - type: PulverizationAction
-          parameters: [*MinThreshold, *MaxThreshold]
+          parameters: [*MinThreshold, *MaxThreshold, *SwapPolicy]
 
   cloudPulverization: &cloudPulverization
     - time-distribution: 1.0

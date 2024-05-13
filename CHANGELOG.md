@@ -1,3 +1,15 @@
+## [1.4.0](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.3.0...1.4.0) (2024-05-13)
+
+
+### Features
+
+* add battery percentage ([3da387e](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/3da387eb03b45658cd1802d50c2a697cf8fb6e8a))
+
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.3.0 [skip ci] ([7ac3fed](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/7ac3fede52fff3e4ea394ac91f73b4717b2af642))
+
 ## [1.3.0](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.2.0...1.3.0) (2024-05-13)
 
 

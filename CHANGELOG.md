@@ -1,3 +1,15 @@
+## [1.6.0](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.5.0...1.6.0) (2024-05-14)
+
+
+### Features
+
+* implement component movement strategy ([e3f6a38](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/e3f6a3877689509945920eefdf812b50a6084c78))
+
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.5.0 [skip ci] ([092af86](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/092af868185c1d9e9a703fdd7aa62c3e7c8765a5))
+
 ## [1.5.0](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.4.1...1.5.0) (2024-05-13)
 
 

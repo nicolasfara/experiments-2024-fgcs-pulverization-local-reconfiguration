@@ -1,3 +1,22 @@
+## [1.6.3](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.6.2...1.6.3) (2024-05-14)
+
+
+### Revert previous changes
+
+* not a real variable ([b066ded](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/b066ded88b46b9ffa89e1178812012420b905d64))
+
+
+### Build and continuous integration
+
+* add missing variable ([303309f](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/303309f5191ede2b1a099c98f56c2583c8de6369))
+
+
+### General maintenance
+
+* **charts:** setup charts generation ([fedb342](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/fedb3429e8915464f5c53e7891fda90c6f2d0662))
+* ignore virtual env folder ([f81307f](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/f81307f10e23bdeab118c7b5a9c0c9129c2d2c49))
+* **release:** update gradle.properties .env versions to 1.6.2 [skip ci] ([5b0ea40](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/5b0ea40e4dd2efbab3e59da8af30cc103413d5ba))
+
 ## [1.6.2](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.6.1...1.6.2) (2024-05-14)
 
 

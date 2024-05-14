@@ -44,7 +44,7 @@ class SmartphoneSwapPolicyManager(
     private var actuallyLocatedIn: Component = Smartphone
 
     override fun manageSwap(smartphoneCapacity: Double, wearableCapacity: Double?): Component? {
-        return if (toPercentage(smartphoneCapacity, smartphoneMaxCapacity) < 5.0 && wearableCapacity != null) {
+        return if (toPercentage(smartphoneCapacity, smartphoneMaxCapacity) < 5.0 && wearableCapacity != null && actuallyLocatedIn == Smartphone) {
             actuallyLocatedIn = Wearable
             Wearable
         } else null
@@ -57,7 +57,7 @@ class WearableSwapPolicyManager(
     private var actuallyLocatedIn: Component = Wearable
 
     override fun manageSwap(smartphoneCapacity: Double, wearableCapacity: Double?): Component? {
-        return if (toPercentage(wearableCapacity!!, wearableMaxCapacity) < 5.0) {
+        return if (toPercentage(wearableCapacity!!, wearableMaxCapacity) < 5.0 && actuallyLocatedIn == Wearable) {
             actuallyLocatedIn = Smartphone
             Smartphone
         } else null

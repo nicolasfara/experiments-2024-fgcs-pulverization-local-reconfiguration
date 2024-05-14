@@ -40,8 +40,6 @@ variables:
     formula: 500_000 # Instructions
   CloudOsInstructions: &CloudOsInstructions
     formula: 900_000 # Instructions
-  BehaviorInstructions:
-    formula: 290_500_000 # Instructions !!!!!! FIXME
   GpsSensorInstructions:
     formula: 50_000_000 # Instructions !!!!!! FIXME
   CommunicationInstructions:
@@ -63,6 +61,9 @@ variables:
     formula: 0.0
   MaxThreshold: &MaxThreshold
     formula: 101.0
+  BehaviorInstructions:
+    type: ArbitraryVariable
+    parameters: [ 490_500_000, [ 290_500_000, 490_500_000 ] ] # Instructions !!!!!! FIXME
   SwapPolicy: &SwapPolicy
     language: kotlin
     formula: |

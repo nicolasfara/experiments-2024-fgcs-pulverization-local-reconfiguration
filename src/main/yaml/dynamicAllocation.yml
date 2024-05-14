@@ -5,7 +5,7 @@ variables:
     min: 0
     max: 1
     step: 1
-    default: 0
+    default: 1
   ConnectionDistance: &ConnectionDistance
     formula: 100
   MaxLatitude:
@@ -40,8 +40,6 @@ variables:
     formula: 500_000 # Instructions
   CloudOsInstructions: &CloudOsInstructions
     formula: 900_000 # Instructions
-  BehaviorInstructions:
-    formula: 290_500_000 # Instructions !!!!!! FIXME
   GpsSensorInstructions:
     formula: 50_000_000 # Instructions !!!!!! FIXME
   CommunicationInstructions:
@@ -58,16 +56,19 @@ variables:
   # --------------- Simulation Variables ---------------
   DeviceCount:
     type: ArbitraryVariable
-    parameters: [3, [100, 300]]
+    parameters: [100, [100, 300]]
   MinThreshold: &MinThreshold
     type: ArbitraryVariable
     parameters: [20.0, [20.0, 40.0]]
   MaxThreshold: &MaxThreshold
     type: ArbitraryVariable
     parameters: [80.0, [60.0, 80.0]]
+  BehaviorInstructions:
+    type: ArbitraryVariable
+    parameters: [490_500_000, [290_500_000, 490_500_000]] # Instructions !!!!!! FIXME
   SwapPolicy: &SwapPolicy
     type: ArbitraryVariable
-    parameters: [hybrid, [smartphone, wearable, hybrid]] # swap when discharged, or at fixed intervals (5% of battery each)
+    parameters: [smartphone, [smartphone, wearable, hybrid]] # swap when discharged, or at fixed intervals (5% of battery each)
   # -----------------------------------------------------
   PeopleWithSmartphoneAndWearable: &PeopleWithSmartphoneAndWearable
     language: kotlin
@@ -175,6 +176,39 @@ deployments:
 environment:
   type: OSMEnvironment
   parameters: ["cesena.pbf", true, true]
+
+export:
+  - type: CSVExporter
+    parameters:
+      exportPath: "data"
+      fileNameRoot: "dynamic"
+      interval: 60
+    data:
+      - time
+      - molecule: IsMoving
+        aggregators: [mean, sum, stddev]
+        value-filter: "onlyFinite"
+      - molecule: SmartphoneCurrentCapacity
+        aggregators: [mean, stddev]
+        value-filter: "onlyFinite"
+      - molecule: WearableCurrentCapacity
+        aggregators: [mean, stddev]
+        value-filter: "onlyFinite"
+      - molecule: SmartphoneCharging
+        aggregators: [mean, sum, stddev]
+        value-filter: "onlyFinite"
+      - molecule: WearableCharging
+        aggregators: [mean, sum, stddev]
+        value-filter: "onlyFinite"
+      - molecule: SmartphoneComponentsTime
+        aggregators: [ mean, sum, stddev ]
+        value-filter: "onlyFinite"
+      - molecule: WearableComponentsTime
+        aggregators: [ mean, sum, stddev ]
+        value-filter: "onlyFinite"
+      - molecule: CloudComponentsTime
+        aggregators: [mean, sum, stddev]
+        value-filter: "onlyFinite"
 
 terminate:
   type: AfterTime

@@ -26,6 +26,12 @@ class PulverizationAction<T>(
     private val WearablePercentage by molecule()
     private val SmartphoneComponents by molecule()
     private val WearableComponents by molecule()
+    private val SmartphoneCurrentCapacity by molecule()
+    private val WearableCurrentCapacity by molecule()
+    private val SmartphoneCharging by molecule()
+    private val WearableCharging by molecule()
+    private val SmartphoneComponentsTime by molecule()
+    private val WearableComponentsTime by molecule()
 
     private val cloudConsumptionModel: CloudConsumptionModel<*> by lazy {
         environment.nodes.first { it.contains(CloudInstance) }
@@ -51,6 +57,9 @@ class PulverizationAction<T>(
             else -> error("Invalid swap policy: $swapPolicy")
         }
     }
+    private var smartphoneComponentsExecutionTime = 0.0
+    private var wearableComponentsExecutionTime = 0.0
+    private var lastRead = 0.0
 
     @Suppress("UNCHECKED_CAST")
     override fun execute() {
@@ -64,16 +73,20 @@ class PulverizationAction<T>(
         if (!isSmartphoneCharging) {
             val smartphonePower = smartphoneConsumptionModel.getConsumptionSinceLastUpdate(currentTime)
             smartphoneConsumptionModel.managePowerConsumption(currentTime, smartphonePower)
+            node.setConcentration(SmartphoneCharging, false as T)
         } else {
             smartphoneConsumptionModel.rechargeStep(currentTime)
+            node.setConcentration(SmartphoneCharging, true as T)
         }
         if (!isWearableCharging) {
             wearableConsumptionModel?.let { wearableModel ->
                 val wearablePower = wearableModel.getConsumptionSinceLastUpdate(currentTime)
                 wearableModel.managePowerConsumption(currentTime, wearablePower)
-            } ?: println("Node ${node.id} has no wearable, skipping wearable consumption management")
+                node.setConcentration(WearableCharging, false as T)
+            } // ?: println("Node ${node.id} has no wearable, skipping wearable consumption management")
         } else {
             wearableConsumptionModel?.rechargeStep(currentTime)
+            node.setConcentration(WearableCharging, true as T)
         }
 
         val currentSmartphoneCapacity = smartphoneConsumptionModel.currentCapacity()
@@ -83,6 +96,7 @@ class PulverizationAction<T>(
             SmartphonePercentage,
             toPercentage(currentSmartphoneCapacity, smartphoneConsumptionModel.batteryCapacity) as T
         )
+        node.setConcentration(SmartphoneCurrentCapacity, currentSmartphoneCapacity as T)
         node.setConcentration(SmartphoneComponents, smartphoneConsumptionModel.getActiveComponents() as T)
         // Write wearable battery status if present
         wearableConsumptionModel?.let {
@@ -91,16 +105,24 @@ class PulverizationAction<T>(
                 toPercentage(currentWearableCapacity, it.batteryCapacity) as T
             )
             node.setConcentration(WearableComponents, it.getActiveComponents() as T)
+            node.setConcentration(WearableCurrentCapacity, currentWearableCapacity as T)
         }
         // Stop moving if no battery left
         if (currentSmartphoneCapacity <= 0.0 || currentWearableCapacity <= 0.0 || isCharging) {
-            println("Node ${node.id} has no battery left, stop moving ")
+            // println("Node ${node.id} has no battery left, stop moving ")
             node.setConcentration(MovementTarget, environment.getPosition(node) as T)
             node.setConcentration(IsMoving, false as T)
         } else {
             node.setConcentration(IsMoving, true as T)
         }
         manageSwapBetweenSmartphoneAndWearable()
+        // Write components execution time
+        val delta = currentTime - lastRead
+        smartphoneComponentsExecutionTime += delta * smartphoneConsumptionModel.getActiveComponents().count()
+        wearableComponentsExecutionTime += delta * (wearableConsumptionModel?.getActiveComponents()?.count() ?: 0)
+        node.setConcentration(SmartphoneComponentsTime, smartphoneComponentsExecutionTime as T)
+        node.setConcentration(WearableComponentsTime, wearableComponentsExecutionTime as T)
+        lastRead = currentTime
     }
 
     private fun manageSwapBetweenSmartphoneAndWearable() {
@@ -110,7 +132,7 @@ class PulverizationAction<T>(
         policyManager.manageSwap(smartphoneCapacity, wearableCapacity)?.let { component ->
             when (component) {
                 Smartphone -> {
-                    println("Swapping GPS from wearable to smartphone for node ${node.id}")
+                    // println("Swapping GPS from wearable to smartphone for node ${node.id}")
                     wearableConsumptionModel?.let { wearableModel ->
                         val gpsComponent = wearableModel.getActiveComponents().filterIsInstance<GpsSensor>().first()
                         wearableModel.removeActiveComponent(node.id, gpsComponent)
@@ -118,7 +140,7 @@ class PulverizationAction<T>(
                     } ?: error("No wearable present in node ${node.id}")
                 }
                 Wearable -> {
-                    println("Swapping GPS from smartphone to wearable for node ${node.id}")
+                    // println("Swapping GPS from smartphone to wearable for node ${node.id}")
                     wearableConsumptionModel?.let { wearableModel ->
                         val gpsComponent = smartphoneConsumptionModel.getActiveComponents().filterIsInstance<GpsSensor>().first()
                         smartphoneConsumptionModel.removeActiveComponent(node.id, gpsComponent)
@@ -136,18 +158,18 @@ class PulverizationAction<T>(
         if (smartphonePercentage < minThreshold && !isCharging) {
             val behavior = smartphoneConsumptionModel.getActiveComponents().filterIsInstance<Behavior>().firstOrNull()
             behavior?.let {
-                println("Node ${node.id} has a behavior in smartphone, moving it to cloud")
+                // println("Node ${node.id} has a behavior in smartphone, moving it to cloud")
                 smartphoneConsumptionModel.removeActiveComponent(node.id, it)
                 cloudConsumptionModel.setActiveComponent(node.id, it)
-            } ?: println("Node ${node.id} has no behavior in smartphone, skipping behavior allocation")
+            } // ?: println("Node ${node.id} has no behavior in smartphone, skipping behavior allocation")
         }
         if (smartphonePercentage > maxThreshold && !isCharging) {
             val behavior = cloudConsumptionModel.getActiveComponents().filterIsInstance<Behavior>().firstOrNull()
             behavior?.let {
-                println("Node ${node.id} has a behavior in cloud, moving it to smartphone")
+                // println("Node ${node.id} has a behavior in cloud, moving it to smartphone")
                 cloudConsumptionModel.removeActiveComponent(node.id, it)
                 smartphoneConsumptionModel.setActiveComponent(node.id, it)
-            } ?: println("Node ${node.id} has no behavior in cloud, skipping behavior allocation")
+            } // ?: println("Node ${node.id} has no behavior in cloud, skipping behavior allocation")
         }
     }
 
@@ -165,11 +187,11 @@ class PulverizationAction<T>(
             "smartphone" -> Unit
             "wearable", "hybrid" -> {
                 wearableConsumptionModel?.let { wearableModel ->
-                    println("Node ${node.id} has a wearable, moving GPS to wearable")
+                    // println("Node ${node.id} has a wearable, moving GPS to wearable")
                     val gpsComponent = smartphoneConsumptionModel.getActiveComponents().filterIsInstance<GpsSensor>().first()
                     smartphoneConsumptionModel.removeActiveComponent(node.id, gpsComponent)
                     wearableModel.setActiveComponent(node.id, gpsComponent)
-                } ?: println("Node ${node.id} has no wearable, GPS will remain in smartphone")
+                } // ?: println("Node ${node.id} has no wearable, GPS will remain in smartphone")
             }
             else -> error("Invalid scenario: $scenario")
         }

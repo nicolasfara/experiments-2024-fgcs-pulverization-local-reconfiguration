@@ -55,7 +55,7 @@ class ConfigureNextPoi<T, P : Position<P>>(
     }
 
     private fun randomPoi(): P {
-        val randomIndex = random.nextInt(availablePoi.size - 1)
+        val randomIndex = random.nextInt(availablePoi.size - 2)
         return availablePoi.filter { it != currentPoiPosition }[randomIndex]
     }
 }

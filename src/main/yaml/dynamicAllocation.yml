@@ -25,7 +25,7 @@ variables:
   MaxTimeInPoi: &MaxTimeInPoi
     formula: 300.0
   SimulationTime: &SimulationTime
-    formula: 21600.0 # 6 hours
+    formula: 43200.0 # 6 hours
   PeopleWithSmartphoneOnlyPercentage:
     formula: 0.7
   SmartphoneEpi: &SmartphoneEpi

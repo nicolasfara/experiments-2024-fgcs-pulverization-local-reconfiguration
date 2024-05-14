@@ -1,6 +1,7 @@
 package it.unibo.alchemist.model.actions
 
 import it.unibo.alchemist.model.Action
+import it.unibo.alchemist.model.Behavior
 import it.unibo.alchemist.model.CloudConsumptionModel
 import it.unibo.alchemist.model.Environment
 import it.unibo.alchemist.model.GpsSensor
@@ -10,7 +11,6 @@ import it.unibo.alchemist.model.SmartphoneConsumptionModel
 import it.unibo.alchemist.model.WearableConsumptionModel
 import it.unibo.alchemist.utils.molecule
 import it.unibo.alchemist.utils.toPercentage
-import org.apache.commons.math3.random.RandomGenerator
 
 class PulverizationAction<T>(
     private val environment: Environment<T, *>,
@@ -56,24 +56,35 @@ class PulverizationAction<T>(
     override fun execute() {
         val currentTime = environment.simulation.time.toDouble()
         initializeNode(swapPolicy)
-        val smartphonePower = smartphoneConsumptionModel.getConsumptionSinceLastUpdate(currentTime)
-        smartphoneConsumptionModel.managePowerConsumption(currentTime, smartphonePower)
 
-        wearableConsumptionModel?.let { wearableModel ->
-            val wearablePower = wearableModel.getConsumptionSinceLastUpdate(currentTime)
-            wearableModel.managePowerConsumption(currentTime, wearablePower)
-        } ?: println("Node ${node.id} has no wearable, skipping wearable consumption management")
+        val isSmartphoneCharging = smartphoneConsumptionModel.isCharging()
+        val isWearableCharging = wearableConsumptionModel?.isCharging() ?: false
+        val isCharging = isSmartphoneCharging || isWearableCharging
+        // Recharge if needed
+        if (!isSmartphoneCharging) {
+            val smartphonePower = smartphoneConsumptionModel.getConsumptionSinceLastUpdate(currentTime)
+            smartphoneConsumptionModel.managePowerConsumption(currentTime, smartphonePower)
+        } else {
+            smartphoneConsumptionModel.rechargeStep(currentTime)
+        }
+        if (!isWearableCharging) {
+            wearableConsumptionModel?.let { wearableModel ->
+                val wearablePower = wearableModel.getConsumptionSinceLastUpdate(currentTime)
+                wearableModel.managePowerConsumption(currentTime, wearablePower)
+            } ?: println("Node ${node.id} has no wearable, skipping wearable consumption management")
+        } else {
+            wearableConsumptionModel?.rechargeStep(currentTime)
+        }
 
         val currentSmartphoneCapacity = smartphoneConsumptionModel.currentCapacity()
         val currentWearableCapacity = wearableConsumptionModel?.currentCapacity() ?: Double.POSITIVE_INFINITY
-        val isCharging = smartphoneConsumptionModel.isCharging() || wearableConsumptionModel?.isCharging() ?: false
-
+        // Write smartphone battery status
         node.setConcentration(
             SmartphonePercentage,
             toPercentage(currentSmartphoneCapacity, smartphoneConsumptionModel.batteryCapacity) as T
         )
         node.setConcentration(SmartphoneComponents, smartphoneConsumptionModel.getActiveComponents() as T)
-
+        // Write wearable battery status if present
         wearableConsumptionModel?.let {
             node.setConcentration(
                 WearablePercentage,
@@ -81,16 +92,19 @@ class PulverizationAction<T>(
             )
             node.setConcentration(WearableComponents, it.getActiveComponents() as T)
         }
-
+        // Stop moving if no battery left
         if (currentSmartphoneCapacity <= 0.0 || currentWearableCapacity <= 0.0 || isCharging) {
             println("Node ${node.id} has no battery left, stop moving ")
             node.setConcentration(MovementTarget, environment.getPosition(node) as T)
             node.setConcentration(IsMoving, false as T)
+        } else {
+            node.setConcentration(IsMoving, true as T)
         }
-        manageSwap()
+        manageSwapBetweenSmartphoneAndWearable()
     }
 
-    private fun manageSwap() {
+    private fun manageSwapBetweenSmartphoneAndWearable() {
+        manageBehaviorAllocation()
         val smartphoneCapacity = smartphoneConsumptionModel.currentCapacity()
         val wearableCapacity = wearableConsumptionModel?.currentCapacity()
         policyManager.manageSwap(smartphoneCapacity, wearableCapacity)?.let { component ->
@@ -112,6 +126,28 @@ class PulverizationAction<T>(
                     } ?: error("No wearable present in node ${node.id}")
                 }
             }
+        }
+    }
+
+    private fun manageBehaviorAllocation() {
+        val smartphoneCapacity = smartphoneConsumptionModel.currentCapacity()
+        val smartphonePercentage = toPercentage(smartphoneCapacity, smartphoneConsumptionModel.batteryCapacity)
+        val isCharging = smartphoneConsumptionModel.isCharging()
+        if (smartphonePercentage < minThreshold && !isCharging) {
+            val behavior = smartphoneConsumptionModel.getActiveComponents().filterIsInstance<Behavior>().firstOrNull()
+            behavior?.let {
+                println("Node ${node.id} has a behavior in smartphone, moving it to cloud")
+                smartphoneConsumptionModel.removeActiveComponent(node.id, it)
+                cloudConsumptionModel.setActiveComponent(node.id, it)
+            } ?: println("Node ${node.id} has no behavior in smartphone, skipping behavior allocation")
+        }
+        if (smartphonePercentage > maxThreshold && !isCharging) {
+            val behavior = cloudConsumptionModel.getActiveComponents().filterIsInstance<Behavior>().firstOrNull()
+            behavior?.let {
+                println("Node ${node.id} has a behavior in cloud, moving it to smartphone")
+                cloudConsumptionModel.removeActiveComponent(node.id, it)
+                smartphoneConsumptionModel.setActiveComponent(node.id, it)
+            } ?: println("Node ${node.id} has no behavior in cloud, skipping behavior allocation")
         }
     }
 

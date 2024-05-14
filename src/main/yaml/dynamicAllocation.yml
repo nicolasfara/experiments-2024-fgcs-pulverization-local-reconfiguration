@@ -125,9 +125,11 @@ deployments:
       - *smartphonePulverization
     properties:
       - type: SmartphoneConsumptionModel
-        parameters: [*SmartphoneEpi, *SmartphoneOsInstructions, *SmartphoneStartupComponents]
+        parameters: [*SmartphoneEpi, *SmartphoneOsInstructions, *SmartphoneStartupComponents, *SmartphoneBatteryCapacity]
     contents:
       - molecule: Person
+        concentration: true
+      - molecule: IsMoving
         concentration: true
       - molecule: SmartphoneBatteryCapacity
         concentration: *SmartphoneBatteryCapacity
@@ -140,11 +142,13 @@ deployments:
       - *smartphonePulverization
     properties:
       - type: SmartphoneConsumptionModel
-        parameters: [*SmartphoneEpi, *SmartphoneOsInstructions, *SmartphoneStartupComponents]
+        parameters: [*SmartphoneEpi, *SmartphoneOsInstructions, *SmartphoneStartupComponents, *SmartphoneBatteryCapacity]
       - type: WearableConsumptionModel
-        parameters: [*WearableEpi, *WearableOsInstructions]
+        parameters: [*WearableEpi, *WearableOsInstructions, *WearableBatteryCapacity]
     contents:
       - molecule: Person
+        concentration: true
+      - molecule: IsMoving
         concentration: true
       - molecule: SmartphoneBatteryCapacity
         concentration: *SmartphoneBatteryCapacity

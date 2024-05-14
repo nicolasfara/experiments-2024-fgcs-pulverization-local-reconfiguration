@@ -9,17 +9,24 @@ import it.unibo.alchemist.model.Reaction
 import it.unibo.alchemist.model.SmartphoneConsumptionModel
 import it.unibo.alchemist.model.WearableConsumptionModel
 import it.unibo.alchemist.utils.molecule
+import it.unibo.alchemist.utils.toPercentage
 import org.apache.commons.math3.random.RandomGenerator
 
 class PulverizationAction<T>(
     private val environment: Environment<T, *>,
     private val node: Node<T>,
-    private val random: RandomGenerator,
     private val minThreshold: Double,
     private val maxThreshold: Double,
     private val swapPolicy: String,
 ) : AbstractLocalAction<T>(node) {
     private val CloudInstance by molecule()
+    private val MovementTarget by molecule()
+    private val IsMoving by molecule()
+    private val SmartphonePercentage by molecule()
+    private val WearablePercentage by molecule()
+    private val SmartphoneComponents by molecule()
+    private val WearableComponents by molecule()
+
     private val cloudConsumptionModel: CloudConsumptionModel<*> by lazy {
         environment.nodes.first { it.contains(CloudInstance) }
             .properties.filterIsInstance<CloudConsumptionModel<*>>().first()
@@ -29,9 +36,6 @@ class PulverizationAction<T>(
     }
     private val wearableConsumptionModel: WearableConsumptionModel<*>? by lazy {
         node.properties.filterIsInstance<WearableConsumptionModel<*>>().firstOrNull()
-    }
-    private val powerManager by lazy {
-        PowerManager(random, node, cloudConsumptionModel, smartphoneConsumptionModel, wearableConsumptionModel, minThreshold, maxThreshold, hasWearable)
     }
     private val hasWearable by lazy { wearableConsumptionModel != null }
     private var isFirstExecution = false
@@ -48,15 +52,48 @@ class PulverizationAction<T>(
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun execute() {
         val currentTime = environment.simulation.time.toDouble()
-        initializeNode()
-        powerManager.managePowerConsumption(currentTime)
+        initializeNode(swapPolicy)
+        val smartphonePower = smartphoneConsumptionModel.getConsumptionSinceLastUpdate(currentTime)
+        smartphoneConsumptionModel.managePowerConsumption(currentTime, smartphonePower)
+
+        wearableConsumptionModel?.let { wearableModel ->
+            val wearablePower = wearableModel.getConsumptionSinceLastUpdate(currentTime)
+            wearableModel.managePowerConsumption(currentTime, wearablePower)
+        } ?: println("Node ${node.id} has no wearable, skipping wearable consumption management")
+
+        val currentSmartphoneCapacity = smartphoneConsumptionModel.currentCapacity()
+        val currentWearableCapacity = wearableConsumptionModel?.currentCapacity() ?: Double.POSITIVE_INFINITY
+        val isCharging = smartphoneConsumptionModel.isCharging() || wearableConsumptionModel?.isCharging() ?: false
+
+        node.setConcentration(
+            SmartphonePercentage,
+            toPercentage(currentSmartphoneCapacity, smartphoneConsumptionModel.batteryCapacity) as T
+        )
+        node.setConcentration(SmartphoneComponents, smartphoneConsumptionModel.getActiveComponents() as T)
+
+        wearableConsumptionModel?.let {
+            node.setConcentration(
+                WearablePercentage,
+                toPercentage(currentWearableCapacity, it.batteryCapacity) as T
+            )
+            node.setConcentration(WearableComponents, it.getActiveComponents() as T)
+        }
+
+        if (currentSmartphoneCapacity <= 0.0 || currentWearableCapacity <= 0.0 || isCharging) {
+            println("Node ${node.id} has no battery left, stop moving ")
+            node.setConcentration(MovementTarget, environment.getPosition(node) as T)
+            node.setConcentration(IsMoving, false as T)
+        }
         manageSwap()
     }
 
     private fun manageSwap() {
-        policyManager.manageSwap(powerManager.getSmartphoneBatteryCapacity(), powerManager.getWearableBatteryCapacity())?.let { component ->
+        val smartphoneCapacity = smartphoneConsumptionModel.currentCapacity()
+        val wearableCapacity = wearableConsumptionModel?.currentCapacity()
+        policyManager.manageSwap(smartphoneCapacity, wearableCapacity)?.let { component ->
             when (component) {
                 Smartphone -> {
                     println("Swapping GPS from wearable to smartphone for node ${node.id}")
@@ -78,23 +115,28 @@ class PulverizationAction<T>(
         }
     }
 
-    private fun initializeNode() {
+    private fun initializeNode(scenario: String) {
         if (!isFirstExecution) {
-            powerManager.initializeBatteryCapacities()
-            if (hasWearable) {
-                setupGpsAllocation()
-            }
+            smartphoneConsumptionModel.initializeCapacityRandomly()
+            wearableConsumptionModel?.initializeCapacityRandomly()
+            setupGpsAllocation(scenario)
             isFirstExecution = true
         }
     }
 
-    private fun setupGpsAllocation() {
-        wearableConsumptionModel?.let { wearableModel ->
-            println("Node ${node.id} has a wearable, moving GPS to wearable")
-            val gpsComponent = smartphoneConsumptionModel.getActiveComponents().filterIsInstance<GpsSensor>().first()
-            smartphoneConsumptionModel.removeActiveComponent(node.id, gpsComponent)
-            wearableModel.setActiveComponent(node.id, gpsComponent)
-        } ?: println("Node ${node.id} has no wearable, GPS will remain in smartphone")
+    private fun setupGpsAllocation(scenario: String) {
+        when (scenario) {
+            "smartphone" -> Unit
+            "wearable", "hybrid" -> {
+                wearableConsumptionModel?.let { wearableModel ->
+                    println("Node ${node.id} has a wearable, moving GPS to wearable")
+                    val gpsComponent = smartphoneConsumptionModel.getActiveComponents().filterIsInstance<GpsSensor>().first()
+                    smartphoneConsumptionModel.removeActiveComponent(node.id, gpsComponent)
+                    wearableModel.setActiveComponent(node.id, gpsComponent)
+                } ?: println("Node ${node.id} has no wearable, GPS will remain in smartphone")
+            }
+            else -> error("Invalid scenario: $scenario")
+        }
     }
 
     override fun cloneAction(node: Node<T>?, reaction: Reaction<T>?): Action<T> {

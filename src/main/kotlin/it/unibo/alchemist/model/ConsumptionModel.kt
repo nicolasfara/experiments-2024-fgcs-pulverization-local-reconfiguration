@@ -14,7 +14,7 @@ abstract class ConsumptionModel<T>(
     private val osInstructions: Int,
     startingComponents: Set<Component>
 ) : NodeProperty<T> {
-    private var activeComponents = startingComponents
+    private val activeComponents: MutableMap<Int, Set<Component>> by lazy { mutableMapOf(node.id to startingComponents) }
     private var lastTimeUpdate = 0.0
 
     /**
@@ -25,20 +25,20 @@ abstract class ConsumptionModel<T>(
     /**
      * Get the active components executed by this [node].
      */
-    fun getActiveComponents(): Set<Component> = activeComponents
+    fun getActiveComponents(): List<Component> = activeComponents.values.flatten()
 
     /**
      * Specify that the given [component] is executed by this [node].
      */
-    fun setActiveComponent(component: Component) {
-        activeComponents += component
+    fun setActiveComponent(id: Int, component: Component) {
+        activeComponents[id] = activeComponents.getOrDefault(id, emptySet()) + component
     }
 
     /**
      * Specify that the given [component] is no longer executed by this [node].
      */
-    fun removeActiveComponent(component: Component) {
-        activeComponents -= component
+    fun removeActiveComponent(id: Int, component: Component) {
+        activeComponents[id] = activeComponents.getOrDefault(id, emptySet()) - component
     }
 
     /**
@@ -46,7 +46,7 @@ abstract class ConsumptionModel<T>(
      * Returns the consumption in Watts/h.
      */
     fun getConsumptionSinceLastUpdate(currentTime: Double): Double {
-        val executedInstructions = activeComponents.sumOf { it.instructionNumber } + (osInstructions * random.nextDouble())
+        val executedInstructions = activeComponents.values.flatten().sumOf { it.instructionNumber } + (osInstructions * random.nextDouble())
         val delta = currentTime - lastTimeUpdate // in seconds
         val consumedEnergy = executedInstructions * deviceEnergyPerInstruction // in Joules
         lastTimeUpdate = currentTime

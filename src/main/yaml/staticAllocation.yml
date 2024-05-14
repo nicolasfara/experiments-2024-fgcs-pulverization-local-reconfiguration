@@ -71,8 +71,8 @@ variables:
   PeopleWithSmartphoneAndWearable: &PeopleWithSmartphoneAndWearable
     language: kotlin
     formula: |
-      import kotlin.math.floor
-      floor(DeviceCount * (1.0 - PeopleWithSmartphoneOnlyPercentage))
+      import kotlin.math.ceil
+      ceil(DeviceCount * (1.0 - PeopleWithSmartphoneOnlyPercentage))
   PeopleWithSmartphoneOnly: &PeopleWithSmartphoneOnly
     language: kotlin
     formula: DeviceCount - PeopleWithSmartphoneAndWearable

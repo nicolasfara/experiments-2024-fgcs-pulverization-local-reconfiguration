@@ -19,13 +19,7 @@ class PulverizationAction<T>(
     private val maxThreshold: Double,
     private val swapPolicy: String,
 ) : AbstractLocalAction<T>(node) {
-    private val SmartphoneBatteryCapacity by molecule()
-    private val WearableBatteryCapacity by molecule()
-    private val SmartphonePercentage by molecule()
-    private val WearablePercentage by molecule()
     private val CloudInstance by molecule()
-    private val ComponentsInSmartphone by molecule()
-    private val ComponentsInWearables by molecule()
     private val cloudConsumptionModel: CloudConsumptionModel<*> by lazy {
         environment.nodes.first { it.contains(CloudInstance) }
             .properties.filterIsInstance<CloudConsumptionModel<*>>().first()
@@ -36,62 +30,72 @@ class PulverizationAction<T>(
     private val wearableConsumptionModel: WearableConsumptionModel<*>? by lazy {
         node.properties.filterIsInstance<WearableConsumptionModel<*>>().firstOrNull()
     }
+    private val powerManager by lazy {
+        PowerManager(random, node, cloudConsumptionModel, smartphoneConsumptionModel, wearableConsumptionModel, minThreshold, maxThreshold, hasWearable)
+    }
     private val hasWearable by lazy { wearableConsumptionModel != null }
     private var isFirstExecution = false
+    private val policyManager: SwapPolicyManager by lazy {
+        when (swapPolicy) {
+            "smartphone" -> SmartphoneSwapPolicyManager(4500.0)
+            "wearable" ->
+                if (hasWearable) WearableSwapPolicyManager(306.0)
+                else SmartphoneSwapPolicyManager(4500.0)
+            "hybrid" ->
+                if (hasWearable) HybridSwapPolicyManager(4500.0, 306.0)
+                else SmartphoneSwapPolicyManager(4500.0)
+            else -> error("Invalid swap policy: $swapPolicy")
+        }
+    }
 
-    @Suppress("UNCHECKED_CAST")
     override fun execute() {
         val currentTime = environment.simulation.time.toDouble()
         initializeNode()
-        if (currentSmartphoneCapacity() > 0.0) {
-            val smartphoneConsumption =
-                smartphoneConsumptionModel.getConsumptionSinceLastUpdate(currentTime)
-            val smartphoneNewCapacity = currentSmartphoneCapacity() - toMilliAmpsPerHour(smartphoneConsumption)
-            node.setConcentration(SmartphoneBatteryCapacity, (if (smartphoneNewCapacity < 0.0) 0.0 else smartphoneNewCapacity) as T)
-            node.setConcentration(SmartphonePercentage, (if (smartphoneNewCapacity < 0.0) 0.0 else (smartphoneNewCapacity / 4500.0)) as T)
-        }
-        if (hasWearable && currentWearableCapacity() > 0.0) {
-            val wearableConsumption =
-                wearableConsumptionModel?.getConsumptionSinceLastUpdate(currentTime) ?: 0.0
-            val wearableNewCapacity = currentWearableCapacity() - toMilliAmpsPerHour(wearableConsumption)
-            node.setConcentration(WearableBatteryCapacity, (if (wearableNewCapacity < 0.0) 0.0 else wearableNewCapacity) as T)
-            node.setConcentration(WearablePercentage, (if (wearableNewCapacity < 0.0) 0.0 else (wearableNewCapacity / 306.0)) as T)
-
-            node.setConcentration(ComponentsInWearables, wearableConsumptionModel?.getActiveComponents() as T)
-        }
-        node.setConcentration(ComponentsInSmartphone, smartphoneConsumptionModel.getActiveComponents() as T)
+        powerManager.managePowerConsumption(currentTime)
+        manageSwap()
     }
 
-    @Suppress("UNCHECKED_CAST")
+    private fun manageSwap() {
+        policyManager.manageSwap(powerManager.getSmartphoneBatteryCapacity(), powerManager.getWearableBatteryCapacity())?.let { component ->
+            when (component) {
+                Smartphone -> {
+                    println("Swapping GPS from wearable to smartphone for node ${node.id}")
+                    wearableConsumptionModel?.let { wearableModel ->
+                        val gpsComponent = wearableModel.getActiveComponents().filterIsInstance<GpsSensor>().first()
+                        wearableModel.removeActiveComponent(node.id, gpsComponent)
+                        smartphoneConsumptionModel.setActiveComponent(node.id, gpsComponent)
+                    } ?: error("No wearable present in node ${node.id}")
+                }
+                Wearable -> {
+                    println("Swapping GPS from smartphone to wearable for node ${node.id}")
+                    wearableConsumptionModel?.let { wearableModel ->
+                        val gpsComponent = smartphoneConsumptionModel.getActiveComponents().filterIsInstance<GpsSensor>().first()
+                        smartphoneConsumptionModel.removeActiveComponent(node.id, gpsComponent)
+                        wearableModel.setActiveComponent(node.id, gpsComponent)
+                    } ?: error("No wearable present in node ${node.id}")
+                }
+            }
+        }
+    }
+
     private fun initializeNode() {
         if (!isFirstExecution) {
-            val initSmartphoneCapacity = randomInitializeBatteryCapacity(4500.0)
-            node.setConcentration(SmartphoneBatteryCapacity, initSmartphoneCapacity as T)
+            powerManager.initializeBatteryCapacities()
             if (hasWearable) {
                 setupGpsAllocation()
-                val initWearableCapacity = randomInitializeBatteryCapacity(306.0)
-                node.setConcentration(WearableBatteryCapacity, initWearableCapacity as T)
             }
             isFirstExecution = true
         }
     }
 
-    private fun randomInitializeBatteryCapacity(maxCapacity: Double): Double {
-        val max = maxThreshold / 100.0 * maxCapacity
-        val min = minThreshold / 100.0 * maxCapacity
-        return maxCapacity - (random.nextDouble() * (max - min))
-    }
-
     private fun setupGpsAllocation() {
-        val gpsComponent = smartphoneConsumptionModel.getActiveComponents().filterIsInstance<GpsSensor>().first()
-        smartphoneConsumptionModel.removeActiveComponent(gpsComponent)
-        wearableConsumptionModel?.setActiveComponent(gpsComponent)
+        wearableConsumptionModel?.let { wearableModel ->
+            println("Node ${node.id} has a wearable, moving GPS to wearable")
+            val gpsComponent = smartphoneConsumptionModel.getActiveComponents().filterIsInstance<GpsSensor>().first()
+            smartphoneConsumptionModel.removeActiveComponent(node.id, gpsComponent)
+            wearableModel.setActiveComponent(node.id, gpsComponent)
+        } ?: println("Node ${node.id} has no wearable, GPS will remain in smartphone")
     }
-
-    private fun currentSmartphoneCapacity(): Double = node.getConcentration(SmartphoneBatteryCapacity) as Double
-    private fun currentWearableCapacity(): Double = node.getConcentration(WearableBatteryCapacity) as Double
-
-    private fun toMilliAmpsPerHour(wattsHour: Double): Double = wattsHour / 3.3 * 1E3
 
     override fun cloneAction(node: Node<T>?, reaction: Reaction<T>?): Action<T> {
         TODO("Not yet implemented")

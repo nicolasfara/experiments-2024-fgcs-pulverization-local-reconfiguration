@@ -47,7 +47,7 @@ class PulverizationAction<T>(
     private var isFirstExecution = false
     private val policyManager: SwapPolicyManager by lazy {
         when (swapPolicy) {
-            "smartphone" -> SmartphoneSwapPolicyManager(4500.0)
+            "smartphone", "none" -> SmartphoneSwapPolicyManager(4500.0)
             "wearable" ->
                 if (hasWearable) WearableSwapPolicyManager(306.0)
                 else SmartphoneSwapPolicyManager(4500.0)
@@ -184,7 +184,7 @@ class PulverizationAction<T>(
 
     private fun setupGpsAllocation(scenario: String) {
         when (scenario) {
-            "smartphone" -> Unit
+            "smartphone", "none" -> Unit
             "wearable", "hybrid" -> {
                 wearableConsumptionModel?.let { wearableModel ->
                     // println("Node ${node.id} has a wearable, moving GPS to wearable")

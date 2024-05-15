@@ -25,7 +25,7 @@ variables:
   MaxTimeInPoi: &MaxTimeInPoi
     formula: 300.0
   SimulationTime: &SimulationTime
-    formula: 21600.0 # 6 hours
+    formula: 43200.0 # 12 hours
   PeopleWithSmartphoneOnlyPercentage:
     formula: 0.7
   SmartphoneEpi: &SmartphoneEpi
@@ -58,8 +58,10 @@ variables:
     type: ArbitraryVariable
     parameters: [100, [100, 300]]
   MinThreshold: &MinThreshold
-    formula: 0.0
+    type: ArbitraryVariable
+    parameters: [ 0.0, [ 0.0, 101.0 ] ]
   MaxThreshold: &MaxThreshold
+    language: kotlin
     formula: 101.0
   BehaviorInstructions:
     type: ArbitraryVariable
@@ -171,6 +173,39 @@ deployments:
 environment:
   type: OSMEnvironment
   parameters: ["cesena.pbf", true, true]
+
+export:
+  - type: CSVExporter
+    parameters:
+      exportPath: "data"
+      fileNameRoot: "static"
+      interval: 60
+    data:
+      - time
+      - molecule: IsMoving
+        aggregators: [mean, sum, stddev]
+        value-filter: "onlyFinite"
+      - molecule: SmartphoneCurrentCapacity
+        aggregators: [mean, stddev]
+        value-filter: "onlyFinite"
+      - molecule: WearableCurrentCapacity
+        aggregators: [mean, stddev]
+        value-filter: "onlyFinite"
+      - molecule: SmartphoneCharging
+        aggregators: [mean, sum, stddev]
+        value-filter: "onlyFinite"
+      - molecule: WearableCharging
+        aggregators: [mean, sum, stddev]
+        value-filter: "onlyFinite"
+      - molecule: SmartphoneComponentsTime
+        aggregators: [ mean, sum, stddev ]
+        value-filter: "onlyFinite"
+      - molecule: WearableComponentsTime
+        aggregators: [ mean, sum, stddev ]
+        value-filter: "onlyFinite"
+      - molecule: CloudComponentsTime
+        aggregators: [mean, sum, stddev]
+        value-filter: "onlyFinite"
 
 terminate:
   type: AfterTime

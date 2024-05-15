@@ -32,12 +32,12 @@ class ConfigureNextPoi<T, P : Position<P>>(
                 timeInPoi = nextTimeInPoi()
                 timeInPoiCounter = simulationTime()
             }
-            nodePosition() == currentPoiPosition && simulationTime() - timeInPoiCounter >= timeInPoi -> {
+            nodePosition().distanceTo(currentPoiPosition!!) < 5.0 && simulationTime() - timeInPoiCounter >= timeInPoi -> {
                 currentPoiPosition = if (random.nextBoolean()) nearestPoi() else randomPoi()
                 timeInPoi = nextTimeInPoi()
                 timeInPoiCounter = simulationTime()
             }
-            else -> return
+            else -> Unit
         }
         node.setConcentration(MovementTarget, currentPoiPosition as T)
     }

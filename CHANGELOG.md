@@ -1,3 +1,20 @@
+## [1.8.0](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.7.0...1.8.0) (2024-05-15)
+
+
+### Features
+
+* implement power estimation ([c306dca](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/c306dca01d520b8b14c16d123414afe227aa7e0a))
+
+
+### Bug Fixes
+
+* fix export file name ([33e48c3](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/33e48c3a4d715a7e27ae11d05b79001eb2529977))
+
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.7.0 [skip ci] ([5e51027](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/5e5102785ec950975b47cc077544ba929e5493ba))
+
 ## [1.7.0](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.6.4...1.7.0) (2024-05-15)
 
 

@@ -1,3 +1,16 @@
+## [1.9.0](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.8.0...1.9.0) (2024-05-15)
+
+
+### Features
+
+* fix swap policy and implement percentage of sensors in wearable ([4a7993d](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/4a7993d29a2b523a36bc68fa3dd9443034c2f318))
+* implement percentage of behaviors in cloud ([ae34948](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/ae34948f6519379b5257aeea512b02dc72d78589))
+
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.8.0 [skip ci] ([c97db11](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/c97db1137fc9022c087c811a62e29cfffd58aabc))
+
 ## [1.8.0](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.7.0...1.8.0) (2024-05-15)
 
 

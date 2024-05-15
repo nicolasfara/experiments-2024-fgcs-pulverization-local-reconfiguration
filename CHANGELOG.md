@@ -1,3 +1,20 @@
+## [1.6.4](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.6.3...1.6.4) (2024-05-15)
+
+
+### Bug Fixes
+
+* fix some simulation and setup ([b7dc1c4](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/b7dc1c43bcdae214b2ee2fa8523463173688e803))
+
+
+### Build and continuous integration
+
+* fix variable ([c16977d](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/c16977d7d33594c4f951a25f6e57a181aca36716))
+
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.6.3 [skip ci] ([ecaa9b7](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/ecaa9b7a406b91486007c7c5c109dfc163a6871c))
+
 ## [1.6.3](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.6.2...1.6.3) (2024-05-14)
 
 

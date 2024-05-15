@@ -178,7 +178,7 @@ export:
   - type: CSVExporter
     parameters:
       exportPath: "data"
-      fileNameRoot: "dynamic"
+      fileNameRoot: "static"
       interval: 60
     data:
       - time

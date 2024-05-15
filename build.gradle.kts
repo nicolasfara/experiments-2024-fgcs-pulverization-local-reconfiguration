@@ -115,11 +115,16 @@ File(rootProject.rootDir.path + "/src/main/yaml").listFiles()
             description = "Launches batch experiments for $capitalizedName"
             maxHeapSize = "${minOf(heap.toInt(), Runtime.getRuntime().availableProcessors() * taskSize)}m"
             File("data").mkdirs()
+            val variables = when (capitalizedName) {
+                "DynamicAllocation" -> "DeviceCount, MinThreshold, MaxThreshold, BehaviorInstructions, SwapPolicy, Seed"
+                "StaticAllocation" -> "DeviceCount, MinThreshold, BehaviorInstructions, Seed"
+                else -> error("Unknown simulation $capitalizedName")
+            }
             args("--override",
                 """
                     launcher: {
                         parameters: {
-                            batch: [ DeviceCount, MinThreshold, MaxThreshold, BehaviorInstructions, SwapPolicy, Seed ],
+                            batch: [ $variables ],
                             showProgress: true,
                             autoStart: true,
                             parallelism: $threadCount,

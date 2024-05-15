@@ -88,6 +88,13 @@ network-model:
   parameters: [*ConnectionDistance]
 
 _programs:
+  travelDistance: &travelDistance
+    - time-distribution: 1
+      type: Event
+      actions:
+        - type: TraveledDistanceAction
+          parameters: [ ]
+
   configureNextPoi: &configureNextPoi
     - time-distribution: 0.1
       type: Event
@@ -121,6 +128,7 @@ deployments:
   - type: Rectangle
     parameters: [*PeopleWithSmartphoneOnly, *MinLatitude, *MinLongitude, *LatitudeSpace, *LongitudeSpace]
     programs:
+      - *travelDistance
       - *moveToTarget
       - *configureNextPoi
       - *smartphonePulverization
@@ -138,6 +146,7 @@ deployments:
   - type: Rectangle
     parameters: [ *PeopleWithSmartphoneAndWearable, *MinLatitude, *MinLongitude, *LatitudeSpace, *LongitudeSpace ]
     programs:
+      - *travelDistance
       - *moveToTarget
       - *configureNextPoi
       - *smartphonePulverization
@@ -208,6 +217,9 @@ export:
         value-filter: "onlyFinite"
       - molecule: CloudComponentsTime
         aggregators: [mean, sum, stddev]
+        value-filter: "onlyFinite"
+      - molecule: TraveledDistance
+        aggregators: [mean, sum, min, max, stddev]
         value-filter: "onlyFinite"
 
 terminate:

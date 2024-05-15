@@ -39,7 +39,7 @@ variables:
   SmartphoneOsInstructions: &SmartphoneOsInstructions
     formula: 500_000 # Instructions
   CloudOsInstructions: &CloudOsInstructions
-    formula: 900_000 # Instructions
+    formula: 5_000_000 # Instructions
   GpsSensorInstructions:
     formula: 50_000_000 # Instructions !!!!!! FIXME
   CommunicationInstructions:
@@ -220,6 +220,15 @@ export:
         value-filter: "onlyFinite"
       - molecule: TraveledDistance
         aggregators: [mean, sum, min, max, stddev]
+        value-filter: "onlyFinite"
+      - molecule: CloudPower
+        aggregators: [mean, sum, stddev]
+        value-filter: "onlyFinite"
+      - molecule: SmartphonePower
+        aggregators: [mean, sum, stddev]
+        value-filter: "onlyFinite"
+      - molecule: WearablePower
+        aggregators: [mean, sum, stddev]
         value-filter: "onlyFinite"
 
 terminate:

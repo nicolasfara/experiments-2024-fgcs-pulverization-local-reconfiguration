@@ -32,6 +32,8 @@ class PulverizationAction<T>(
     private val WearableCharging by molecule()
     private val SmartphoneComponentsTime by molecule()
     private val WearableComponentsTime by molecule()
+    private val SmartphonePower by molecule()
+    private val WearablePower by molecule()
 
     private val cloudConsumptionModel: CloudConsumptionModel<*> by lazy {
         environment.nodes.first { it.contains(CloudInstance) }
@@ -64,6 +66,7 @@ class PulverizationAction<T>(
     @Suppress("UNCHECKED_CAST")
     override fun execute() {
         val currentTime = environment.simulation.time.toDouble()
+        val delta = currentTime - lastRead
         initializeNode(swapPolicy)
 
         val isSmartphoneCharging = smartphoneConsumptionModel.isCharging()
@@ -74,6 +77,7 @@ class PulverizationAction<T>(
             val smartphonePower = smartphoneConsumptionModel.getConsumptionSinceLastUpdate(currentTime)
             smartphoneConsumptionModel.managePowerConsumption(currentTime, smartphonePower)
             node.setConcentration(SmartphoneCharging, false as T)
+            node.setConcentration(SmartphonePower, (smartphonePower * delta) as T)
         } else {
             smartphoneConsumptionModel.rechargeStep(currentTime)
             node.setConcentration(SmartphoneCharging, true as T)
@@ -83,6 +87,7 @@ class PulverizationAction<T>(
                 val wearablePower = wearableModel.getConsumptionSinceLastUpdate(currentTime)
                 wearableModel.managePowerConsumption(currentTime, wearablePower)
                 node.setConcentration(WearableCharging, false as T)
+                node.setConcentration(WearablePower, (wearablePower * delta) as T)
             } // ?: println("Node ${node.id} has no wearable, skipping wearable consumption management")
         } else {
             wearableConsumptionModel?.rechargeStep(currentTime)
@@ -117,7 +122,6 @@ class PulverizationAction<T>(
         }
         manageSwapBetweenSmartphoneAndWearable()
         // Write components execution time
-        val delta = currentTime - lastRead
         smartphoneComponentsExecutionTime += delta * smartphoneConsumptionModel.getActiveComponents().count()
         wearableComponentsExecutionTime += delta * (wearableConsumptionModel?.getActiveComponents()?.count() ?: 0)
         node.setConcentration(SmartphoneComponentsTime, smartphoneComponentsExecutionTime as T)

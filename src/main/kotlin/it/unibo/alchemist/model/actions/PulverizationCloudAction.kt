@@ -9,10 +9,11 @@ import it.unibo.alchemist.utils.molecule
 
 class PulverizationCloudAction<T>(
     private val environment: Environment<T, *>,
-    private val node: Node<T>
+    private val node: Node<T>,
 ) : AbstractLocalAction<T>(node) {
     private val CloudActiveComponents by molecule()
     private val CloudComponentsTime by molecule()
+    private val CloudPower by molecule()
 
     private val cloudConsumptionModel: CloudConsumptionModel<*> by lazy {
         node.properties.filterIsInstance<CloudConsumptionModel<*>>().first()
@@ -30,6 +31,10 @@ class PulverizationCloudAction<T>(
         val activeComponents = cloudConsumptionModel.getActiveComponents()
         node.setConcentration(CloudActiveComponents, activeComponents as T)
         val delta = currentTime - lastUpdate
+
+        val cloudConsumption = cloudConsumptionModel.getConsumptionSinceLastUpdate(currentTime)
+        node.setConcentration(CloudPower, (cloudConsumption * delta) as T)
+
         componentsExecutionTime += delta * cloudConsumptionModel.getActiveComponents().count()
         node.setConcentration(CloudComponentsTime, componentsExecutionTime as T)
         lastUpdate = currentTime

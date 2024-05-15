@@ -46,7 +46,9 @@ abstract class ConsumptionModel<T>(
      * Returns the consumption in Watts/h.
      */
     fun getConsumptionSinceLastUpdate(currentTime: Double): Double {
-        val executedInstructions = activeComponents.values.flatten().sumOf { it.instructionNumber } + (osInstructions * random.nextDouble())
+        val _executedInstructions = activeComponents.values.flatten().sumOf { it.instructionNumber / 1e9 } +
+                osInstructions / 1e9 * random.nextDouble()
+        val executedInstructions = _executedInstructions * 1e9
         val delta = currentTime - lastTimeUpdate // in seconds
         val consumedEnergy = executedInstructions * deviceEnergyPerInstruction // in Joules
         lastTimeUpdate = currentTime

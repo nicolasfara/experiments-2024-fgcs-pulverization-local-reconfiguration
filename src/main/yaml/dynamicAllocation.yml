@@ -231,6 +231,7 @@ export:
         aggregators: [mean, sum, stddev]
         value-filter: "onlyFinite"
       - type: SensorOffloadedInWearable
+      - type: BehaviorOffloadedInCloud
 
 terminate:
   type: AfterTime

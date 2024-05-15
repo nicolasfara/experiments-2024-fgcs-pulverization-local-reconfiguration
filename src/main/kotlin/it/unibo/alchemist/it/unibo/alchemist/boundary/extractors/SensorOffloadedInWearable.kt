@@ -21,7 +21,6 @@ class SensorOffloadedInWearable : AbstractDoubleExporter() {
         val wearableHostingSensor = environment.nodes
             .filter {
                 val wearable = it.properties.filterIsInstance<WearableConsumptionModel<*>>().firstOrNull()
-                println(wearable?.getActiveComponents())
                 wearable?.getActiveComponents()?.isNotEmpty() ?: false
             }
             .size

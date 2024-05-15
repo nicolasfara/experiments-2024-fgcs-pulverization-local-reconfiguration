@@ -53,6 +53,8 @@ variables:
     formula: 4500.0 # mAh [Oneplus 9]
   WearableBatteryCapacity: &WearableBatteryCapacity
     formula: 306.0 # mAh [Pixel Watch 2]
+  CloudCost: &CloudCost
+    formula: 3.584 # $/hour [AWS EC2 m5.16xlarge]
   # --------------- Simulation Variables ---------------
   DeviceCount:
     type: ArbitraryVariable
@@ -115,7 +117,7 @@ _programs:
       type: Event
       actions:
         - type: PulverizationCloudAction
-          parameters: [ ]
+          parameters: [ *CloudCost ]
 
 deployments:
   # People with smartphone only
@@ -218,6 +220,11 @@ export:
       - molecule: WearablePower
         aggregators: [mean, sum, stddev]
         value-filter: "onlyFinite"
+      - molecule: CloudCost
+        aggregators: [sum]
+        value-filter: "onlyFinite"
+      - type: SensorOffloadedInWearable
+      - type: BehaviorOffloadedInCloud
 
 terminate:
   type: AfterTime

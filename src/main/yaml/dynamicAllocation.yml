@@ -230,6 +230,7 @@ export:
       - molecule: WearablePower
         aggregators: [mean, sum, stddev]
         value-filter: "onlyFinite"
+      - type: SensorOffloadedInWearable
 
 terminate:
   type: AfterTime

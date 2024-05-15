@@ -38,6 +38,10 @@ class HybridSwapPolicyManager(
     }
 }
 
+class DoNotSwapPolicyManager : SwapPolicyManager {
+    override fun manageSwap(smartphoneCapacity: Double, wearableCapacity: Double?): Component? = null
+}
+
 class SmartphoneSwapPolicyManager(
     private val smartphoneMaxCapacity: Double
 ) : SwapPolicyManager {

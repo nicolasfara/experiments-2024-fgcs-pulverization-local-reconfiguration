@@ -49,13 +49,13 @@ class PulverizationAction<T>(
     private var isFirstExecution = false
     private val policyManager: SwapPolicyManager by lazy {
         when (swapPolicy) {
-            "smartphone", "none" -> SmartphoneSwapPolicyManager(4500.0)
+            "smartphone", "none" -> DoNotSwapPolicyManager()
             "wearable" ->
                 if (hasWearable) WearableSwapPolicyManager(306.0)
-                else SmartphoneSwapPolicyManager(4500.0)
+                else DoNotSwapPolicyManager() //SmartphoneSwapPolicyManager(4500.0)
             "hybrid" ->
                 if (hasWearable) HybridSwapPolicyManager(4500.0, 306.0)
-                else SmartphoneSwapPolicyManager(4500.0)
+                else DoNotSwapPolicyManager() // SmartphoneSwapPolicyManager(4500.0)
             else -> error("Invalid swap policy: $swapPolicy")
         }
     }

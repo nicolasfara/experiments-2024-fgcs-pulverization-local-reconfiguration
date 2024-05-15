@@ -1,3 +1,20 @@
+## [1.7.0](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.6.4...1.7.0) (2024-05-15)
+
+
+### Features
+
+* add traveled distance metric ([10ba69e](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/10ba69e9fcd977628efb37314dd8673946b99c18))
+
+
+### Bug Fixes
+
+* solve problem with movement ([f649d3a](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/f649d3a15802b50d5557da007ad52d21408f2091))
+
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.6.4 [skip ci] ([d30f324](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/d30f324478d5b3fb407e21dc71b2a288130b15c0))
+
 ## [1.6.4](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.6.3...1.6.4) (2024-05-15)
 
 

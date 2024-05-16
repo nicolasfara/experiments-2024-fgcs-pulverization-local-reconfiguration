@@ -28,22 +28,24 @@ variables:
     formula: 32400.0 # 9 hours
   PeopleWithSmartphoneOnlyPercentage:
     formula: 0.7
+  CloudEpi: &CloudEpi
+    formula: 100.0E-9 #n Joules
   SmartphoneEpi: &SmartphoneEpi
     formula: 5.50E-9 # nJoules
   WearableEpi: &WearableEpi
     formula: 1.10E-9 # nJoules [Pixel Watch 2 -- Qualcomm SW5100]
-  CloudEpi: &CloudEpi
-    formula: 100.0E-9 #n Joules
-  WearableOsInstructions: &WearableOsInstructions
-    formula: 50_000_000 # Instructions
-  SmartphoneOsInstructions: &SmartphoneOsInstructions
-    formula: 75_000_000 # Instructions
   CloudOsInstructions: &CloudOsInstructions
-    formula: 100_000_000 # Instructions
+    formula: 50_000 # Instructions
+  SmartphoneOsInstructions: &SmartphoneOsInstructions
+    formula: 28_409 # Instructions
+  WearableOsInstructions: &WearableOsInstructions
+    formula: 9_800 # Instructions
   GpsSensorInstructions:
-    formula: 200_000_000 # Instructions !!!!!! FIXME
+    formula: 63_131 # Instructions !!!!!! FIXME
   CommunicationInstructions:
-    formula: 25_000_000 # Instructions !!!!!! FIXME
+    formula: 28_409 # Instructions !!!!!! FIXME
+  BehaviorInstructions:
+    formula: 132_575 # Instructions !!!!!! FIXME
   SmartphoneStartupComponents: &SmartphoneStartupComponents
     language: kotlin
     formula: |
@@ -61,16 +63,13 @@ variables:
     parameters: [100, [100, 300]]
   Thresholds: &Thresholds
     type: ArbitraryVariable
-    parameters: [[20.0, 80.0], [[0.0, 0.0], [20.0, 60.0], [20.0, 80.0], [40.0, 60.0], [40.0, 80.0], [100.0, 100.0]]]
+    parameters: [[100.0, 100.0], [[0.0, 0.0], [20.0, 60.0], [20.0, 80.0], [40.0, 60.0], [40.0, 80.0], [100.0, 100.0]]]
 #  MinThreshold: &MinThreshold
 #    type: ArbitraryVariable
 #    parameters: [20.0, [20.0, 40.0]]
 #  MaxThreshold: &MaxThreshold
 #    type: ArbitraryVariable
 #    parameters: [80.0, [60.0, 80.0]]
-  BehaviorInstructions:
-    type: ArbitraryVariable
-    parameters: [500_000_000, [500_000_000, 150_000_000]] # Instructions
   SwapPolicy: &SwapPolicy
     type: ArbitraryVariable
     parameters: [smartphone, [smartphone, wearable, hybrid]] # swap when discharged, or at fixed intervals (5% of battery each)
@@ -236,6 +235,9 @@ export:
         aggregators: [mean, sum, stddev]
         value-filter: "onlyFinite"
       - molecule: CloudCost
+        aggregators: [sum]
+        value-filter: "onlyFinite"
+      - molecule: CloudInstance
         aggregators: [sum]
         value-filter: "onlyFinite"
       - type: SensorOffloadedInWearable

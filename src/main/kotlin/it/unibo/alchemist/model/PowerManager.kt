@@ -3,7 +3,7 @@ package it.unibo.alchemist.model
 import org.apache.commons.math3.random.RandomGenerator
 
 interface PowerManager {
-    fun managePowerConsumption(currentTime: Double, consumptionInWattHours: Double): Double
+    fun managePowerConsumption(currentTime: Double, consumptionWattHours: Double): Double
     fun rechargeStep(currentTime: Double): Double
     fun initializeCapacityRandomly(): Double
     fun currentCapacity(): Double
@@ -19,8 +19,8 @@ class PowerManagerImpl(
     private var isCharging = false
     private var lastTimeUpdate = 0.0
 
-    override fun managePowerConsumption(currentTime: Double, consumptionInWattHours: Double): Double {
-        val consumptionToMah = toMilliAmpsPerHour(consumptionInWattHours)
+    override fun managePowerConsumption(currentTime: Double, consumptionWattHours: Double): Double {
+        val consumptionToMah = toMilliAmpsPerHour(consumptionWattHours) / 3600.0 // get mAh consumed in 1 second
         val newCapacity = currentCapacity - consumptionToMah
         if (newCapacity < 0.0) {
             isCharging = true
@@ -55,5 +55,5 @@ class PowerManagerImpl(
         return maxCapacity * random.nextDouble()
     }
 
-    private fun toMilliAmpsPerHour(wattsHour: Double): Double = wattsHour / 3.3 * 1E3
+    private fun toMilliAmpsPerHour(wattsHour: Double): Double = wattsHour * 1000 / 3.3
 }

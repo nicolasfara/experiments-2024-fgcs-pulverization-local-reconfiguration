@@ -6,6 +6,8 @@ import it.unibo.alchemist.model.Environment
 import it.unibo.alchemist.model.Node
 import it.unibo.alchemist.model.Reaction
 import it.unibo.alchemist.utils.molecule
+import kotlin.math.ceil
+import kotlin.math.floor
 
 class PulverizationCloudAction<T>(
     private val environment: Environment<T, *>,
@@ -16,6 +18,7 @@ class PulverizationCloudAction<T>(
     private val CloudComponentsTime by molecule()
     private val CloudPower by molecule()
     private val CloudCost by molecule()
+    private val CloudInstance by molecule()
 
     private val cloudConsumptionModel: CloudConsumptionModel<*> by lazy {
         node.properties.filterIsInstance<CloudConsumptionModel<*>>().first()
@@ -36,7 +39,10 @@ class PulverizationCloudAction<T>(
         val delta = currentTime - lastUpdate
 
         val cloudConsumption = cloudConsumptionModel.getConsumptionSinceLastUpdate(currentTime)
-        node.setConcentration(CloudPower, (cloudConsumption * delta) as T)
+        node.setConcentration(CloudPower, cloudConsumption as T)
+
+        val cloudInstances = ceil(cloudConsumption / 220.0) // 220W TDP per cloud instance
+        node.setConcentration(CloudInstance, cloudInstances as T)
 
         actualCloudCost += (cloudCost / 3600) * delta * (cloudConsumptionModel.getActiveComponents().size + 1)
         node.setConcentration(CloudCost, actualCloudCost as T)

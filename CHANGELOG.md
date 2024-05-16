@@ -1,3 +1,15 @@
+## [1.11.0](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.10.2...1.11.0) (2024-05-16)
+
+
+### Features
+
+* implement derivative of travel distance and cloud costs ([3abbd99](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/3abbd9968fb6d93d1b20aa4192d397a6643607e1))
+
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.10.2 [skip ci] ([849d280](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/849d28055bea6a575061a5b7842ac1d2d06da98b))
+
 ## [1.10.2](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.10.1...1.10.2) (2024-05-16)
 
 

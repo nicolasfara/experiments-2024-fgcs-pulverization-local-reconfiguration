@@ -60,7 +60,7 @@ variables:
   # --------------- Simulation Variables ---------------
   DeviceCount:
     type: ArbitraryVariable
-    parameters: [100, [100, 300]]
+    parameters: [1, [100, 300]]
   Thresholds: &Thresholds
     type: ArbitraryVariable
     parameters: [[100.0, 100.0], [[0.0, 0.0], [20.0, 60.0], [20.0, 80.0], [40.0, 60.0], [40.0, 80.0], [100.0, 100.0]]]

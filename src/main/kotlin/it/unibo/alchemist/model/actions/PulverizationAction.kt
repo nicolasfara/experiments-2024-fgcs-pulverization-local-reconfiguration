@@ -125,7 +125,6 @@ class PulverizationAction<T>(
         // Stop moving if no battery left
         if (currentSmartphoneCapacity <= 0.0 || currentWearableCapacity <= 0.0 || isCharging) {
             // println("Node ${node.id} has no battery left, stop moving ")
-            node.setConcentration(MovementTarget, environment.getPosition(node) as T)
             node.setConcentration(IsMoving, false as T)
         } else {
             node.setConcentration(IsMoving, true as T)

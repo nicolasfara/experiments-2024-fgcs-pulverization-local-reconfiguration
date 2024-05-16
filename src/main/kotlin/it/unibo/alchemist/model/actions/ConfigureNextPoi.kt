@@ -16,6 +16,7 @@ class ConfigureNextPoi<T, P : Position<P>>(
 ) : AbstractLocalAction<T>(node) {
     private val PoI by molecule()
     private val MovementTarget by molecule()
+    private val IsMoving by molecule()
     private val availablePoi by lazy { environment.nodes.filter { it.contains(PoI) }.map { environment.getPosition(it) } }
 
     private var currentPoiPosition: P? = null
@@ -26,13 +27,15 @@ class ConfigureNextPoi<T, P : Position<P>>(
 
     @Suppress("UNCHECKED_CAST")
     override fun execute() {
+        val canMove = node.getConcentration(IsMoving) as Boolean
         when {
+            !canMove -> node.setConcentration(MovementTarget, nodePosition() as T)
             currentPoiPosition == null -> {
                 currentPoiPosition = if (random.nextBoolean()) nearestPoi() else randomPoi()
                 timeInPoi = nextTimeInPoi()
                 timeInPoiCounter = simulationTime()
             }
-            nodePosition().distanceTo(currentPoiPosition!!) < 5.0 && simulationTime() - timeInPoiCounter >= timeInPoi -> {
+            currentPoiPosition == nodePosition() && simulationTime() - timeInPoiCounter >= timeInPoi -> {
                 currentPoiPosition = if (random.nextBoolean()) nearestPoi() else randomPoi()
                 timeInPoi = nextTimeInPoi()
                 timeInPoiCounter = simulationTime()

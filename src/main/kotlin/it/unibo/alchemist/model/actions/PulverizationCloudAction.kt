@@ -38,7 +38,7 @@ class PulverizationCloudAction<T>(
         val cloudConsumption = cloudConsumptionModel.getConsumptionSinceLastUpdate(currentTime)
         node.setConcentration(CloudPower, (cloudConsumption * delta) as T)
 
-        actualCloudCost += (cloudCost / 3600.0) * delta * cloudConsumption
+        actualCloudCost += (cloudCost / 3600) * delta * (cloudConsumptionModel.getActiveComponents().size + 1)
         node.setConcentration(CloudCost, actualCloudCost as T)
 
         componentsExecutionTime += delta * cloudConsumptionModel.getActiveComponents().count()

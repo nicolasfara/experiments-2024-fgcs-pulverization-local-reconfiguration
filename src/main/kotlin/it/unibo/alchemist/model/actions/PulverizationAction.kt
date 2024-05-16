@@ -15,8 +15,9 @@ import it.unibo.alchemist.utils.toPercentage
 class PulverizationAction<T>(
     private val environment: Environment<T, *>,
     private val node: Node<T>,
-    private val minThreshold: Double,
-    private val maxThreshold: Double,
+    private val thresholds: Iterable<Double>,
+//    private val minThreshold: Double,
+//    private val maxThreshold: Double,
     private val swapPolicy: String,
 ) : AbstractLocalAction<T>(node) {
     private val CloudInstance by molecule()
@@ -34,6 +35,15 @@ class PulverizationAction<T>(
     private val WearableComponentsTime by molecule()
     private val SmartphonePower by molecule()
     private val WearablePower by molecule()
+
+    private val minThreshold by lazy {
+        require(thresholds.count() == 2) { "Thresholds must contain exactly two values" }
+        thresholds.first()
+    }
+    private val maxThreshold by lazy {
+        require(thresholds.count() == 2) { "Thresholds must contain exactly two values" }
+        thresholds.last()
+    }
 
     private val cloudConsumptionModel: CloudConsumptionModel<*> by lazy {
         environment.nodes.first { it.contains(CloudInstance) }

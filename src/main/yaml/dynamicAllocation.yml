@@ -5,7 +5,7 @@ variables:
     min: 0
     max: 1
     step: 1
-    default: 1
+    default: 100
   ConnectionDistance: &ConnectionDistance
     formula: 100
   MaxLatitude:
@@ -23,9 +23,9 @@ variables:
   PoiCount: &PoiCount
     formula: 15
   MaxTimeInPoi: &MaxTimeInPoi
-    formula: 300.0
+    formula: 1800.0
   SimulationTime: &SimulationTime
-    formula: 43200.0 # 12 hours
+    formula: 21600.0 # 6 hours
   PeopleWithSmartphoneOnlyPercentage:
     formula: 0.7
   SmartphoneEpi: &SmartphoneEpi
@@ -39,7 +39,7 @@ variables:
   SmartphoneOsInstructions: &SmartphoneOsInstructions
     formula: 500_000 # Instructions
   CloudOsInstructions: &CloudOsInstructions
-    formula: 5_000_000 # Instructions
+    formula: 80_000_000 # Instructions
   GpsSensorInstructions:
     formula: 50_000_000 # Instructions !!!!!! FIXME
   CommunicationInstructions:
@@ -59,15 +59,18 @@ variables:
   DeviceCount:
     type: ArbitraryVariable
     parameters: [100, [100, 300]]
-  MinThreshold: &MinThreshold
+  Thresholds: &Thresholds
     type: ArbitraryVariable
-    parameters: [20.0, [20.0, 40.0]]
-  MaxThreshold: &MaxThreshold
-    type: ArbitraryVariable
-    parameters: [80.0, [60.0, 80.0]]
+    parameters: [[0.0, 0.0], [[0.0, 0.0], [20.0, 60.0], [20.0, 80.0], [40.0, 60.0], [40.0, 80.0], [100.0, 100.0]]]
+#  MinThreshold: &MinThreshold
+#    type: ArbitraryVariable
+#    parameters: [20.0, [20.0, 40.0]]
+#  MaxThreshold: &MaxThreshold
+#    type: ArbitraryVariable
+#    parameters: [80.0, [60.0, 80.0]]
   BehaviorInstructions:
     type: ArbitraryVariable
-    parameters: [490_500_000, [290_500_000, 490_500_000]] # Instructions !!!!!! FIXME
+    parameters: [890_500_000, [490_500_000, 890_500_000]] # Instructions !!!!!! FIXME
   SwapPolicy: &SwapPolicy
     type: ArbitraryVariable
     parameters: [smartphone, [smartphone, wearable, hybrid]] # swap when discharged, or at fixed intervals (5% of battery each)
@@ -98,14 +101,14 @@ _programs:
           parameters: [ ]
 
   configureNextPoi: &configureNextPoi
-    - time-distribution: 0.1
+    - time-distribution: 0.5
       type: Event
       actions:
         - type: ConfigureNextPoi
           parameters: [*MaxTimeInPoi] # max 5 minutes in PoI
 
   moveToTarget: &moveToTarget
-    - time-distribution: 0.5
+    - time-distribution: 1
       type: Event
       actions:
         - type: TargetMapWalker
@@ -116,7 +119,7 @@ _programs:
       type: Event
       actions:
         - type: PulverizationAction
-          parameters: [*MinThreshold, *MaxThreshold, *SwapPolicy]
+          parameters: [*Thresholds, *SwapPolicy]
 
   cloudPulverization: &cloudPulverization
     - time-distribution: 1.0

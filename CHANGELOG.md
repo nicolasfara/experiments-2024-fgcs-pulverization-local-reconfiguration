@@ -1,3 +1,15 @@
+## [1.10.2](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.10.1...1.10.2) (2024-05-16)
+
+
+### Bug Fixes
+
+* fix cloud costs ([527b7d2](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/527b7d2d65a94a5377a131df2e98f2a6e808ff0b))
+
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.10.1 [skip ci] ([5ef0670](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/5ef0670160f85c9ad807ab8526d85a58fb831ab7))
+
 ## [1.10.1](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.10.0...1.10.1) (2024-05-16)
 
 

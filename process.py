@@ -203,7 +203,7 @@ if __name__ == '__main__':
     timeSamples = 100
     # time management
     minTime = 600
-    maxTime = 21600 - minTime
+    maxTime = 32400 - minTime
     timeColumnName = 'time'
     logarithmicTime = False
     # One or more variables are considered random and "flattened"
@@ -469,7 +469,7 @@ if __name__ == '__main__':
     for experiment in experiments:
         current_experiment_means = means[experiment]
         current_experiment_errors = stdevs[experiment]
-        # generate_all_charts(current_experiment_means, current_experiment_errors, basedir = f'{experiment}/all')
+        generate_all_charts(current_experiment_means, current_experiment_errors, basedir = f'{experiment}/all')
 
     # Custom charting
 

@@ -25,7 +25,7 @@ variables:
   MaxTimeInPoi: &MaxTimeInPoi
     formula: 1800.0
   SimulationTime: &SimulationTime
-    formula: 21600.0 # 6 hours
+    formula: 32400.0 # 9 hours
   PeopleWithSmartphoneOnlyPercentage:
     formula: 0.7
   SmartphoneEpi: &SmartphoneEpi
@@ -35,15 +35,15 @@ variables:
   CloudEpi: &CloudEpi
     formula: 100.0E-9 #n Joules
   WearableOsInstructions: &WearableOsInstructions
-    formula: 90_000 # Instructions
+    formula: 50_000_000 # Instructions
   SmartphoneOsInstructions: &SmartphoneOsInstructions
-    formula: 500_000 # Instructions
+    formula: 75_000_000 # Instructions
   CloudOsInstructions: &CloudOsInstructions
-    formula: 80_000_000 # Instructions
+    formula: 100_000_000 # Instructions
   GpsSensorInstructions:
-    formula: 50_000_000 # Instructions !!!!!! FIXME
+    formula: 200_000_000 # Instructions !!!!!! FIXME
   CommunicationInstructions:
-    formula: 40_000_000 # Instructions !!!!!! FIXME
+    formula: 25_000_000 # Instructions !!!!!! FIXME
   SmartphoneStartupComponents: &SmartphoneStartupComponents
     language: kotlin
     formula: |
@@ -61,7 +61,7 @@ variables:
     parameters: [100, [100, 300]]
   Thresholds: &Thresholds
     type: ArbitraryVariable
-    parameters: [[0.0, 0.0], [[0.0, 0.0], [20.0, 60.0], [20.0, 80.0], [40.0, 60.0], [40.0, 80.0], [100.0, 100.0]]]
+    parameters: [[20.0, 80.0], [[0.0, 0.0], [20.0, 60.0], [20.0, 80.0], [40.0, 60.0], [40.0, 80.0], [100.0, 100.0]]]
 #  MinThreshold: &MinThreshold
 #    type: ArbitraryVariable
 #    parameters: [20.0, [20.0, 40.0]]
@@ -70,7 +70,7 @@ variables:
 #    parameters: [80.0, [60.0, 80.0]]
   BehaviorInstructions:
     type: ArbitraryVariable
-    parameters: [890_500_000, [490_500_000, 890_500_000]] # Instructions !!!!!! FIXME
+    parameters: [500_000_000, [500_000_000, 150_000_000]] # Instructions
   SwapPolicy: &SwapPolicy
     type: ArbitraryVariable
     parameters: [smartphone, [smartphone, wearable, hybrid]] # swap when discharged, or at fixed intervals (5% of battery each)

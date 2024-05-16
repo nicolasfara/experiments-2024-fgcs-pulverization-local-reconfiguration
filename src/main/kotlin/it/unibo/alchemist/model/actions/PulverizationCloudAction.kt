@@ -44,7 +44,7 @@ class PulverizationCloudAction<T>(
         val cloudInstances = ceil(cloudConsumption / 220.0) // 220W TDP per cloud instance
         node.setConcentration(CloudInstance, cloudInstances as T)
 
-        actualCloudCost += (cloudCost / 3600) * delta * (cloudConsumptionModel.getActiveComponents().size + 1)
+        actualCloudCost += (cloudCost / 3600) * delta * cloudInstances
         node.setConcentration(CloudCost, actualCloudCost as T)
 
         componentsExecutionTime += delta * cloudConsumptionModel.getActiveComponents().count()

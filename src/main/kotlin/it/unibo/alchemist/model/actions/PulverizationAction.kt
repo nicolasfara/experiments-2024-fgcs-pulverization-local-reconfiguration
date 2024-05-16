@@ -16,12 +16,11 @@ class PulverizationAction<T>(
     private val environment: Environment<T, *>,
     private val node: Node<T>,
     private val thresholds: Iterable<Double>,
-//    private val minThreshold: Double,
-//    private val maxThreshold: Double,
     private val swapPolicy: String,
+    private val smartphoneCapacity: Double,
+    private val wearableCapacity: Double,
 ) : AbstractLocalAction<T>(node) {
     private val CloudInstance by molecule()
-    private val MovementTarget by molecule()
     private val IsMoving by molecule()
     private val SmartphonePercentage by molecule()
     private val WearablePercentage by molecule()
@@ -59,13 +58,10 @@ class PulverizationAction<T>(
     private var isFirstExecution = false
     private val policyManager: SwapPolicyManager by lazy {
         when (swapPolicy) {
-            "smartphone", "none" -> DoNotSwapPolicyManager()
-            "wearable" ->
-                if (hasWearable) WearableSwapPolicyManager(306.0)
-                else DoNotSwapPolicyManager() //SmartphoneSwapPolicyManager(4500.0)
+            "smartphone", "wearable", "none" -> DoNotSwapPolicyManager()
             "hybrid" ->
-                if (hasWearable) HybridSwapPolicyManager(4500.0, 306.0)
-                else DoNotSwapPolicyManager() // SmartphoneSwapPolicyManager(4500.0)
+                if (hasWearable) HybridSwapPolicyManager(smartphoneCapacity, wearableCapacity)
+                else DoNotSwapPolicyManager()
             else -> error("Invalid swap policy: $swapPolicy")
         }
     }
@@ -103,10 +99,8 @@ class PulverizationAction<T>(
             wearableConsumptionModel?.rechargeStep(currentTime)
             node.setConcentration(WearableCharging, true as T)
         }
-
-        val currentSmartphoneCapacity = smartphoneConsumptionModel.currentCapacity()
-        val currentWearableCapacity = wearableConsumptionModel?.currentCapacity() ?: Double.POSITIVE_INFINITY
         // Write smartphone battery status
+        val currentSmartphoneCapacity = smartphoneConsumptionModel.currentCapacity()
         node.setConcentration(
             SmartphonePercentage,
             toPercentage(currentSmartphoneCapacity, smartphoneConsumptionModel.batteryCapacity) as T
@@ -114,6 +108,7 @@ class PulverizationAction<T>(
         node.setConcentration(SmartphoneCurrentCapacity, currentSmartphoneCapacity as T)
         node.setConcentration(SmartphoneComponents, smartphoneConsumptionModel.getActiveComponents() as T)
         // Write wearable battery status if present
+        val currentWearableCapacity = wearableConsumptionModel?.currentCapacity() ?: Double.POSITIVE_INFINITY
         wearableConsumptionModel?.let {
             node.setConcentration(
                 WearablePercentage,
@@ -176,7 +171,7 @@ class PulverizationAction<T>(
                 cloudConsumptionModel.setActiveComponent(node.id, it)
             } // ?: println("Node ${node.id} has no behavior in smartphone, skipping behavior allocation")
         }
-        if (smartphonePercentage > maxThreshold && !isCharging) {
+        if (isCharging && (minThreshold != 0.0 && minThreshold != 100.0)) {
             val behavior = cloudConsumptionModel.getActiveComponents().filterIsInstance<Behavior>().firstOrNull()
             behavior?.let {
                 // println("Node ${node.id} has a behavior in cloud, moving it to smartphone")
@@ -184,6 +179,14 @@ class PulverizationAction<T>(
                 smartphoneConsumptionModel.setActiveComponent(node.id, it)
             } // ?: println("Node ${node.id} has no behavior in cloud, skipping behavior allocation")
         }
+//        if (smartphonePercentage > maxThreshold && !isCharging) {
+//            val behavior = cloudConsumptionModel.getActiveComponents().filterIsInstance<Behavior>().firstOrNull()
+//            behavior?.let {
+//                // println("Node ${node.id} has a behavior in cloud, moving it to smartphone")
+//                cloudConsumptionModel.removeActiveComponent(node.id, it)
+//                smartphoneConsumptionModel.setActiveComponent(node.id, it)
+//            } // ?: println("Node ${node.id} has no behavior in cloud, skipping behavior allocation")
+//        }
     }
 
     private fun initializeNode(scenario: String) {

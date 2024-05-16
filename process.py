@@ -476,26 +476,26 @@ if __name__ == '__main__':
     import seaborn as sns
     import seaborn.objects as so
 
-    dynamic_dataset = means['dynamic']
-    new_values = ['device', 'cloud']
-
-    def make_distance_and_cost(dataset):
-        pass
-
-    # data_distance_cost_dynamic = (dynamic_dataset[["TraveledDistance[mean]"]]
-    #                               .mean(dim=['BehaviorInstructions', 'SwapPolicy', 'time'], skipna=True))
-    data_distance_cost_dynamic = dynamic_dataset.sel({'SwapPolicy': 'smartphone'})
-    data_distance_cost_dynamic = data_distance_cost_dynamic.mean(dim=['BehaviorInstructions'])['TraveledDistance[mean]']
-    data_distance = data_distance_cost_dynamic.to_dataframe().reset_index()
-    # data_distance = data_distance.drop(columns=["CloudCost[sum]", "CloudPower[sum]"])
-    # data_distance = data_distance.melt(id_vars=['Thresholds', 'DeviceCount', 'time', 'TraveledDistance[mean]'], var_name='distance_metric', value_name='distance')
-    # data_distance = data_distance.melt(id_vars=['Thresholds', 'DeviceCount', 'time', 'CloudCost[sum]'], var_name='cost_metric', value_name='cost')
-    print(data_distance)
-
-    distance_cost_plot = (
-        so.Plot(data_distance, x='time', y='TraveledDistance[mean]', color='Thresholds')
-        .add(so.Line())
-        .layout(size=(15, 5))
-        .facet("DeviceCount")
-    )
-    distance_cost_plot.show()
+    # dynamic_dataset = means['dynamic']
+    # new_values = ['device', 'cloud']
+    #
+    # def make_distance_and_cost(dataset):
+    #     pass
+    #
+    # # data_distance_cost_dynamic = (dynamic_dataset[["TraveledDistance[mean]"]]
+    # #                               .mean(dim=['BehaviorInstructions', 'SwapPolicy', 'time'], skipna=True))
+    # data_distance_cost_dynamic = dynamic_dataset.sel({'SwapPolicy': 'smartphone'})
+    # data_distance_cost_dynamic = data_distance_cost_dynamic.mean(dim=['BehaviorInstructions'])['TraveledDistance[mean]']
+    # data_distance = data_distance_cost_dynamic.to_dataframe().reset_index()
+    # # data_distance = data_distance.drop(columns=["CloudCost[sum]", "CloudPower[sum]"])
+    # # data_distance = data_distance.melt(id_vars=['Thresholds', 'DeviceCount', 'time', 'TraveledDistance[mean]'], var_name='distance_metric', value_name='distance')
+    # # data_distance = data_distance.melt(id_vars=['Thresholds', 'DeviceCount', 'time', 'CloudCost[sum]'], var_name='cost_metric', value_name='cost')
+    # print(data_distance)
+    #
+    # distance_cost_plot = (
+    #     so.Plot(data_distance, x='time', y='TraveledDistance[mean]', color='Thresholds')
+    #     .add(so.Line())
+    #     .layout(size=(15, 5))
+    #     .facet("DeviceCount")
+    # )
+    # distance_cost_plot.show()

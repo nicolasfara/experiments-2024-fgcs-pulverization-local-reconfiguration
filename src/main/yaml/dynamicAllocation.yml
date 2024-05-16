@@ -25,9 +25,9 @@ variables:
   MaxTimeInPoi: &MaxTimeInPoi
     formula: 1800.0
   SimulationTime: &SimulationTime
-    formula: 32400.0 # 9 hours
+    formula: 43200.0
   PeopleWithSmartphoneOnlyPercentage:
-    formula: 0.7
+    formula: 0
   CloudEpi: &CloudEpi
     formula: 100.0E-9 #n Joules
   SmartphoneEpi: &SmartphoneEpi
@@ -57,13 +57,17 @@ variables:
     formula: 306.0 # mAh [Pixel Watch 2]
   CloudCost: &CloudCost
     formula: 3.584 # $/hour [AWS EC2 m5.16xlarge]
+  SmartphoneRechargeTime: &SmartphoneRechargeTime
+    formula: 120.0 # minutes
+  WearableRechargeTime: &WearableRechargeTime
+    formula: 90.0 # minutes
   # --------------- Simulation Variables ---------------
   DeviceCount:
     type: ArbitraryVariable
     parameters: [1, [100, 300]]
   Thresholds: &Thresholds
     type: ArbitraryVariable
-    parameters: [[100.0, 100.0], [[0.0, 0.0], [20.0, 60.0], [20.0, 80.0], [40.0, 60.0], [40.0, 80.0], [100.0, 100.0]]]
+    parameters: [[20.0, 100.0], [[0.0, 0.0], [20.0, 100.0], [30.0, 100.0], [40.0, 100.0], [100.0, 100.0]]]
 #  MinThreshold: &MinThreshold
 #    type: ArbitraryVariable
 #    parameters: [20.0, [20.0, 40.0]]
@@ -72,7 +76,7 @@ variables:
 #    parameters: [80.0, [60.0, 80.0]]
   SwapPolicy: &SwapPolicy
     type: ArbitraryVariable
-    parameters: [smartphone, [smartphone, wearable, hybrid]] # swap when discharged, or at fixed intervals (5% of battery each)
+    parameters: [hybrid, [smartphone, wearable, hybrid]] # swap when discharged, or at fixed intervals (5% of battery each)
   # -----------------------------------------------------
   PeopleWithSmartphoneAndWearable: &PeopleWithSmartphoneAndWearable
     language: kotlin
@@ -118,7 +122,7 @@ _programs:
       type: Event
       actions:
         - type: PulverizationAction
-          parameters: [*Thresholds, *SwapPolicy]
+          parameters: [*Thresholds, *SwapPolicy, *SmartphoneBatteryCapacity, *WearableBatteryCapacity]
 
   cloudPulverization: &cloudPulverization
     - time-distribution: 1.0
@@ -138,7 +142,7 @@ deployments:
       - *smartphonePulverization
     properties:
       - type: SmartphoneConsumptionModel
-        parameters: [*SmartphoneEpi, *SmartphoneOsInstructions, *SmartphoneStartupComponents, *SmartphoneBatteryCapacity]
+        parameters: [*SmartphoneEpi, *SmartphoneOsInstructions, *SmartphoneStartupComponents, *SmartphoneBatteryCapacity, *SmartphoneRechargeTime]
     contents:
       - molecule: Person
         concentration: true
@@ -156,9 +160,9 @@ deployments:
       - *smartphonePulverization
     properties:
       - type: SmartphoneConsumptionModel
-        parameters: [*SmartphoneEpi, *SmartphoneOsInstructions, *SmartphoneStartupComponents, *SmartphoneBatteryCapacity]
+        parameters: [*SmartphoneEpi, *SmartphoneOsInstructions, *SmartphoneStartupComponents, *SmartphoneBatteryCapacity, *SmartphoneRechargeTime]
       - type: WearableConsumptionModel
-        parameters: [*WearableEpi, *WearableOsInstructions, *WearableBatteryCapacity]
+        parameters: [*WearableEpi, *WearableOsInstructions, *WearableBatteryCapacity, *WearableRechargeTime]
     contents:
       - molecule: Person
         concentration: true

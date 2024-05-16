@@ -29,7 +29,10 @@ class ConfigureNextPoi<T, P : Position<P>>(
     override fun execute() {
         val canMove = node.getConcentration(IsMoving) as Boolean
         when {
-            !canMove -> node.setConcentration(MovementTarget, nodePosition() as T)
+            !canMove -> {
+                node.setConcentration(MovementTarget, nodePosition() as T)
+                return
+            }
             currentPoiPosition == null -> {
                 currentPoiPosition = if (random.nextBoolean()) nearestPoi() else randomPoi()
                 timeInPoi = nextTimeInPoi()

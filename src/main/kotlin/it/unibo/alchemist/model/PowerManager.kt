@@ -1,5 +1,6 @@
 package it.unibo.alchemist.model
 
+import org.apache.commons.math3.distribution.ExponentialDistribution
 import org.apache.commons.math3.random.RandomGenerator
 
 interface PowerManager {
@@ -14,10 +15,13 @@ class PowerManagerImpl(
     private val random: RandomGenerator,
     initialBatteryCapacity: Double,
     private val maxCapacity: Double,
+    private val averageRechargeTime: Double,
 ) : PowerManager {
     private var currentCapacity = initialBatteryCapacity
-    private var isCharging = false
+    private var isCharging = random.nextDouble() < 0.9
     private var lastTimeUpdate = 0.0
+    private val negativeExponential = ExponentialDistribution(random, 600.0)
+    private var chargingConditionDelta = negativeExponential.sample()
 
     override fun managePowerConsumption(currentTime: Double, consumptionWattHours: Double): Double {
         val consumptionToMah = toMilliAmpsPerHour(consumptionWattHours) / 3600.0 // get mAh consumed in 1 second
@@ -32,10 +36,12 @@ class PowerManagerImpl(
 
     override fun rechargeStep(currentTime: Double): Double {
         val delta = currentTime - lastTimeUpdate
-        val newCapacity = currentCapacity + delta * (3000.0 / 3600) // 3000 mAh recharge rate
+        val newCapacity = currentCapacity + delta * ((maxCapacity / averageRechargeTime) / (3600 + chargingConditionDelta)) // 3000 mAh recharge rate
+        currentCapacity = newCapacity
         if (newCapacity >= maxCapacity) {
             isCharging = false
             currentCapacity = maxCapacity
+            chargingConditionDelta = negativeExponential.sample()
         }
         return newCapacity
     }
@@ -50,9 +56,9 @@ class PowerManagerImpl(
     override fun isCharging(): Boolean = isCharging
 
     private fun randomInitializeBatteryCapacity(maxCapacity: Double): Double {
-//        val max = maxThreshold / 100.0 * maxCapacity
-//        val min = minThreshold / 100.0 * maxCapacity
-        return maxCapacity * random.nextDouble()
+        val sixtyPercent = 0.6 * maxCapacity
+        val delta = maxCapacity - sixtyPercent
+        return sixtyPercent + delta * random.nextDouble()
     }
 
     private fun toMilliAmpsPerHour(wattsHour: Double): Double = wattsHour * 1000 / 3.3

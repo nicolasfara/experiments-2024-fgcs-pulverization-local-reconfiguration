@@ -1,3 +1,23 @@
+## [1.10.1](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.10.0...1.10.1) (2024-05-16)
+
+
+### Bug Fixes
+
+* fix movement when recharging ([9768744](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/97687441cce3bba967302c498eb9703c9402f6b9))
+* fix recharge rate ([2d032d7](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/2d032d7e706c7b41a4a83a41a0df3485a3702ca7))
+* fix simulations ([20ba13f](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/20ba13fdc18963d15760ba5fd0358aba3cf0df3b))
+* solve problem with power model ([e573351](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/e573351a255690845f84760bb808dd05351dacd4))
+
+
+### Build and continuous integration
+
+* remove unused variable ([42a4a81](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/42a4a8188b07ff16a8a5eb5fcae9f2a8e6fe09e9))
+
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.10.0 [skip ci] ([1e0a3dc](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/1e0a3dca286fe6077f794e6f457f444cdaae4e4d))
+
 ## [1.10.0](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.9.0...1.10.0) (2024-05-15)
 
 

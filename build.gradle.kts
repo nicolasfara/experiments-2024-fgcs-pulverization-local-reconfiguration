@@ -116,7 +116,7 @@ File(rootProject.rootDir.path + "/src/main/yaml").listFiles()
             maxHeapSize = "${minOf(heap.toInt(), Runtime.getRuntime().availableProcessors() * taskSize)}m"
             File("data").mkdirs()
             val variables = when (capitalizedName) {
-                "DynamicAllocation" -> "DeviceCount, Thresholds, BehaviorInstructions, SwapPolicy, Seed"
+                "DynamicAllocation" -> "DeviceCount, Thresholds, SwapPolicy, Seed"
                 "StaticAllocation" -> "DeviceCount, MinThreshold, BehaviorInstructions, Seed"
                 else -> error("Unknown simulation $capitalizedName")
             }

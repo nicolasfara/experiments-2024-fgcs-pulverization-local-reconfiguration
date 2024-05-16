@@ -241,6 +241,9 @@ export:
       - molecule: CloudCost
         aggregators: [sum]
         value-filter: "onlyFinite"
+      - molecule: CloudCostPerHour
+        aggregators: [ sum ]
+        value-filter: "onlyFinite"
       - molecule: CloudInstance
         aggregators: [sum]
         value-filter: "onlyFinite"

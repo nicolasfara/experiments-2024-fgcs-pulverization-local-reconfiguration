@@ -19,16 +19,26 @@ class HybridSwapPolicyManager(
     private var wearableCapacityWhenSwap = wearableMaxCapacity
 
     override fun manageSwap(smartphoneCapacity: Double, wearableCapacity: Double?): Component? {
+        if (smartphoneCapacity > smartphoneCapacityWhenSwap) {
+            smartphoneCapacityWhenSwap = smartphoneCapacity
+        }
+        if (wearableCapacity != null && wearableCapacity > wearableCapacityWhenSwap) {
+            wearableCapacityWhenSwap = wearableCapacity
+        }
         return when (actuallyLocatedIn) {
             Smartphone -> {
-                if (toPercentage(smartphoneCapacityWhenSwap - smartphoneCapacity, smartphoneMaxCapacity) > 5.0 && wearableCapacity!! > smartphoneCapacity) {
+                if (toPercentage(smartphoneCapacityWhenSwap - smartphoneCapacity, smartphoneMaxCapacity) > 5.0 &&
+                    toPercentage(smartphoneCapacity, smartphoneMaxCapacity) < toPercentage(wearableCapacity!!, wearableMaxCapacity)
+                    ) {
                     actuallyLocatedIn = Wearable
                     wearableCapacityWhenSwap = wearableCapacity
                     Wearable
                 } else null
             }
             Wearable -> {
-                if (toPercentage(wearableCapacityWhenSwap - wearableCapacity!!, wearableMaxCapacity) > 5.0 && smartphoneCapacity > wearableCapacity) {
+                if (toPercentage(wearableCapacityWhenSwap - wearableCapacity!!, wearableMaxCapacity) > 5.0 &&
+                    toPercentage(wearableCapacity, wearableMaxCapacity) < toPercentage(smartphoneCapacity, smartphoneMaxCapacity)
+                    ) {
                     actuallyLocatedIn = Smartphone
                     smartphoneCapacityWhenSwap = smartphoneCapacity
                     Smartphone

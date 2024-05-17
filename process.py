@@ -471,7 +471,7 @@ if __name__ == '__main__':
     for experiment in experiments:
         current_experiment_means = means[experiment]
         current_experiment_errors = stdevs[experiment]
-        generate_all_charts(current_experiment_means, current_experiment_errors, basedir = f'{experiment}/all')
+        # generate_all_charts(current_experiment_means, current_experiment_errors, basedir = f'{experiment}/all')
 
     # Custom charting
 
@@ -491,13 +491,13 @@ if __name__ == '__main__':
 
     cost_travel_qos = dynamic_dataset[['TraveledDistanceLastTenMinutes[mean]', 'CloudCostPerHour[sum]']]
     cost_travel_qos = (cost_travel_qos.assign(
-        qos=lambda x: x['TraveledDistanceLastTenMinutes[mean]'] / x['CloudCostPerHour[sum]'] ** 2
+        qos=lambda x: x['TraveledDistanceLastTenMinutes[mean]'] / x['CloudCostPerHour[sum]']
     ))
     cost_travel_qos_dataframe = cost_travel_qos.to_dataframe().reset_index()
     cost_travel_qos_dataframe = (cost_travel_qos_dataframe
                                  .drop(columns=["CloudCostPerHour[sum]", "TraveledDistanceLastTenMinutes[mean]", "SwapPolicy"]))
     cost_travel_qos_dataframe = cost_travel_qos_dataframe.melt(
-        id_vars=['Thresholds', 'DeviceCount', 'time'],
+        id_vars=['Thresholds', 'time'],
         var_name='threshold_value',
         value_name='qos_value',
     )
@@ -507,7 +507,6 @@ if __name__ == '__main__':
         so.Plot(cost_travel_qos_dataframe, x='time', y='qos_value', color='Thresholds')
         .add(so.Line())
         .layout(size=(15, 5))
-        .facet("DeviceCount")
     )
     cost_travel_qos_plot.show()
 

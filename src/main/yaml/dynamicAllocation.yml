@@ -230,7 +230,7 @@ export:
       - molecule: TraveledDistance
         aggregators: [mean, sum, min, max, stddev]
         value-filter: "onlyFinite"
-      - molecule: TraveledDistanceLastTenMinutes
+      - molecule: TraveledDistanceLastHours
         aggregators: [mean, sum, min, max, stddev]
         value-filter: "onlyFinite"
       - molecule: CloudPower

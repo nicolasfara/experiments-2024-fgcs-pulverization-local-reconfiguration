@@ -35,7 +35,7 @@ class PowerManagerImpl(
     }
 
     override fun rechargeStep(currentTime: Double): Double {
-        val delta = currentTime - lastTimeUpdate
+        val delta = 1 // to be fix for the real time
         val newCapacity = currentCapacity + delta * ((maxCapacity / averageRechargeTime) / (3600 + chargingConditionDelta)) // 3000 mAh recharge rate
         currentCapacity = newCapacity
         if (newCapacity >= maxCapacity) {

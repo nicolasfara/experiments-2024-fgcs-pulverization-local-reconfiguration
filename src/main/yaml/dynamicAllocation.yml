@@ -58,9 +58,9 @@ variables:
   CloudCost: &CloudCost
     formula: 3.584 # $/hour [AWS EC2 m5.16xlarge]
   SmartphoneRechargeTime: &SmartphoneRechargeTime
-    formula: 120.0 # minutes
+    formula: 2.0 # minutes
   WearableRechargeTime: &WearableRechargeTime
-    formula: 90.0 # minutes
+    formula: 1.5 # minutes
   # --------------- Simulation Variables ---------------
   DeviceCount:
     formula: 100
@@ -68,7 +68,7 @@ variables:
 #    parameters: [100, [100, 300]]
   Thresholds: &Thresholds
     type: ArbitraryVariable
-    parameters: [[20.0, 100.0], [[0.0, 0.0], [20.0, 100.0], [30.0, 100.0], [40.0, 100.0], [100.0, 100.0]]]
+    parameters: [[100.0, 100.0], [[0.0, 0.0], [20.0, 100.0], [30.0, 100.0], [40.0, 100.0], [100.0, 100.0]]]
 #  MinThreshold: &MinThreshold
 #    type: ArbitraryVariable
 #    parameters: [20.0, [20.0, 40.0]]
@@ -230,9 +230,6 @@ export:
       - molecule: TraveledDistance
         aggregators: [mean, sum, min, max, stddev]
         value-filter: "onlyFinite"
-      - molecule: TraveledDistanceLastHours
-        aggregators: [mean, sum, min, max, stddev]
-        value-filter: "onlyFinite"
       - molecule: CloudPower
         aggregators: [mean, sum, stddev]
         value-filter: "onlyFinite"
@@ -244,9 +241,6 @@ export:
         value-filter: "onlyFinite"
       - molecule: CloudCost
         aggregators: [sum]
-        value-filter: "onlyFinite"
-      - molecule: CloudCostPerHour
-        aggregators: [ sum ]
         value-filter: "onlyFinite"
       - molecule: CloudInstance
         aggregators: [sum]

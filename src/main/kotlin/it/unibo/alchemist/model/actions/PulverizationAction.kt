@@ -9,6 +9,7 @@ import it.unibo.alchemist.model.Node
 import it.unibo.alchemist.model.Reaction
 import it.unibo.alchemist.model.SmartphoneConsumptionModel
 import it.unibo.alchemist.model.WearableConsumptionModel
+import it.unibo.alchemist.model.molecules.SimpleMolecule
 import it.unibo.alchemist.utils.molecule
 import it.unibo.alchemist.utils.toPercentage
 
@@ -119,9 +120,15 @@ class PulverizationAction<T>(
         }
         // Stop moving if no battery left
         if (currentSmartphoneCapacity <= 0.0 || currentWearableCapacity <= 0.0 || isCharging) {
-            // println("Node ${node.id} has no battery left, stop moving ")
+//            if (node.getConcentration(IsMoving) as Boolean) {
+//                println("Node ${node.id} stop moving at time $currentTime")
+//                println("Node has traveled ${node.getConcentration(SimpleMolecule("TraveledDistance"))} meters")
+//            }
             node.setConcentration(IsMoving, false as T)
         } else {
+//            if (!(node.getConcentration(IsMoving) as Boolean)) {
+//                println("Node ${node.id} start moving at time $currentTime")
+//            }
             node.setConcentration(IsMoving, true as T)
         }
         manageSwapBetweenSmartphoneAndWearable()

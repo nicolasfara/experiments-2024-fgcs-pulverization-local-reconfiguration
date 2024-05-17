@@ -481,9 +481,8 @@ if __name__ == '__main__':
     plt.rc('text.latex', preamble=r'\usepackage{amsmath,amssymb,amsfonts,amssymb,graphicx}')
     plt.rcParams.update({"text.usetex": True})
 
-    sns.set(font_scale=1.5)
-    sns.color_palette('viridis', as_cmap=True)
-    sns.set_style("whitegrid")
+    # sns.set(font_scale=2)
+    sns.set_theme(style='whitegrid', palette='viridis', font_scale=1.5)
     # setup viridis seaborn
 
     dynamic_dataset = means['dynamic']
@@ -491,8 +490,16 @@ if __name__ == '__main__':
 
     travel_distance = dynamic_dataset['TraveledDistance[mean]'].to_dataframe()
     travel_distance.rename({'TraveledDistance[mean]': 'TraveledDistance'}, axis=1, inplace=True)
-    travel_distance = travel_distance.rolling(180).sum().diff()
+    travel_distance = travel_distance.rolling(180).apply(lambda x: x.iloc[-1] - x.iloc[0], raw=False)
     print(travel_distance)
+
+    travel_plot = (
+        so.Plot(travel_distance, x='time', y='TraveledDistance', color='Thresholds')
+        .add(so.Line())
+        .layout(engine='tight', size=(20, 4))
+        .facet("SwapPolicy")
+    )
+    travel_plot.show()
 
     # cost_travel_qos = dynamic_dataset[['TraveledDistanceLastHour[mean]', 'CloudCostPerHour[sum]']]
     # cost_travel_qos = (cost_travel_qos.assign(

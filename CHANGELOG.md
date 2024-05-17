@@ -1,3 +1,16 @@
+## [1.11.2](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.11.1...1.11.2) (2024-05-17)
+
+
+### Bug Fixes
+
+* fix overall simualtions ([5a3de83](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/5a3de837c0500f6bfc3a3756b2c5e8b2755f1699))
+* move in travel distance last hour ([6056282](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/6056282c4fbc8c995cc192614db1f871b74d6490))
+
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.11.1 [skip ci] ([5caddeb](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/5caddebfd0b5852edbf4ec3c88d9d2b603ded293))
+
 ## [1.11.1](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.11.0...1.11.1) (2024-05-17)
 
 

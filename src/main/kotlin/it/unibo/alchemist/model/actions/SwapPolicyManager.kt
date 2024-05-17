@@ -21,14 +21,14 @@ class HybridSwapPolicyManager(
     override fun manageSwap(smartphoneCapacity: Double, wearableCapacity: Double?): Component? {
         return when (actuallyLocatedIn) {
             Smartphone -> {
-                if (toPercentage(smartphoneCapacityWhenSwap - smartphoneCapacity, smartphoneMaxCapacity) > 5.0) {
+                if (toPercentage(smartphoneCapacityWhenSwap - smartphoneCapacity, smartphoneMaxCapacity) > 5.0 && wearableCapacity!! > smartphoneCapacity) {
                     actuallyLocatedIn = Wearable
-                    wearableCapacityWhenSwap = wearableCapacity!!
+                    wearableCapacityWhenSwap = wearableCapacity
                     Wearable
                 } else null
             }
             Wearable -> {
-                if (toPercentage(wearableCapacityWhenSwap - wearableCapacity!!, wearableMaxCapacity) > 5.0) {
+                if (toPercentage(wearableCapacityWhenSwap - wearableCapacity!!, wearableMaxCapacity) > 5.0 && smartphoneCapacity > wearableCapacity) {
                     actuallyLocatedIn = Smartphone
                     smartphoneCapacityWhenSwap = smartphoneCapacity
                     Smartphone
@@ -40,30 +40,4 @@ class HybridSwapPolicyManager(
 
 class DoNotSwapPolicyManager : SwapPolicyManager {
     override fun manageSwap(smartphoneCapacity: Double, wearableCapacity: Double?): Component? = null
-}
-
-class SmartphoneSwapPolicyManager(
-    private val smartphoneMaxCapacity: Double
-) : SwapPolicyManager {
-    private var actuallyLocatedIn: Component = Smartphone
-
-    override fun manageSwap(smartphoneCapacity: Double, wearableCapacity: Double?): Component? {
-        return if (toPercentage(smartphoneCapacity, smartphoneMaxCapacity) < 5.0 && wearableCapacity != null && actuallyLocatedIn == Smartphone) {
-            actuallyLocatedIn = Wearable
-            Wearable
-        } else null
-    }
-}
-
-class WearableSwapPolicyManager(
-    private val wearableMaxCapacity: Double
-) : SwapPolicyManager {
-    private var actuallyLocatedIn: Component = Wearable
-
-    override fun manageSwap(smartphoneCapacity: Double, wearableCapacity: Double?): Component? {
-        return if (toPercentage(wearableCapacity!!, wearableMaxCapacity) < 5.0 && actuallyLocatedIn == Wearable) {
-            actuallyLocatedIn = Smartphone
-            Smartphone
-        } else null
-    }
 }

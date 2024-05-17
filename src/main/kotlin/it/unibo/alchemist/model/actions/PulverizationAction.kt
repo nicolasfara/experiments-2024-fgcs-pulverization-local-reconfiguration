@@ -179,14 +179,6 @@ class PulverizationAction<T>(
                 smartphoneConsumptionModel.setActiveComponent(node.id, it)
             } // ?: println("Node ${node.id} has no behavior in cloud, skipping behavior allocation")
         }
-//        if (smartphonePercentage > maxThreshold && !isCharging) {
-//            val behavior = cloudConsumptionModel.getActiveComponents().filterIsInstance<Behavior>().firstOrNull()
-//            behavior?.let {
-//                // println("Node ${node.id} has a behavior in cloud, moving it to smartphone")
-//                cloudConsumptionModel.removeActiveComponent(node.id, it)
-//                smartphoneConsumptionModel.setActiveComponent(node.id, it)
-//            } // ?: println("Node ${node.id} has no behavior in cloud, skipping behavior allocation")
-//        }
     }
 
     private fun initializeNode(scenario: String) {

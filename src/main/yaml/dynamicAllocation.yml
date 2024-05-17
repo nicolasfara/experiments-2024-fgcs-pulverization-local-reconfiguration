@@ -25,7 +25,7 @@ variables:
   MaxTimeInPoi: &MaxTimeInPoi
     formula: 1800.0
   SimulationTime: &SimulationTime
-    formula: 43200.0
+    formula: 32400.0
   PeopleWithSmartphoneOnlyPercentage:
     formula: 0
   CloudEpi: &CloudEpi
@@ -63,8 +63,9 @@ variables:
     formula: 90.0 # minutes
   # --------------- Simulation Variables ---------------
   DeviceCount:
-    type: ArbitraryVariable
-    parameters: [100, [100, 300]]
+    formula: 100
+#    type: ArbitraryVariable
+#    parameters: [100, [100, 300]]
   Thresholds: &Thresholds
     type: ArbitraryVariable
     parameters: [[20.0, 100.0], [[0.0, 0.0], [20.0, 100.0], [30.0, 100.0], [40.0, 100.0], [100.0, 100.0]]]

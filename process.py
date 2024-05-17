@@ -200,10 +200,10 @@ if __name__ == '__main__':
     experiments = ['dynamic']
     floatPrecision = '{: 0.3f}'
     # Number of time samples 
-    timeSamples = 100
+    timeSamples = 324
     # time management
-    minTime = 600
-    maxTime = 43200 - minTime
+    minTime = 0
+    maxTime = 32400 - minTime
     timeColumnName = 'time'
     logarithmicTime = False
     # One or more variables are considered random and "flattened"
@@ -487,28 +487,33 @@ if __name__ == '__main__':
     # setup viridis seaborn
 
     dynamic_dataset = means['dynamic']
-    print(dynamic_dataset)
+    # print(dynamic_dataset)
 
-    cost_travel_qos = dynamic_dataset[['TraveledDistanceLastTenMinutes[mean]', 'CloudCostPerHour[sum]']]
-    cost_travel_qos = (cost_travel_qos.assign(
-        qos=lambda x: x['TraveledDistanceLastTenMinutes[mean]'] / x['CloudCostPerHour[sum]']
-    ))
-    cost_travel_qos_dataframe = cost_travel_qos.to_dataframe().reset_index()
-    cost_travel_qos_dataframe = (cost_travel_qos_dataframe
-                                 .drop(columns=["CloudCostPerHour[sum]", "TraveledDistanceLastTenMinutes[mean]", "SwapPolicy"]))
-    cost_travel_qos_dataframe = cost_travel_qos_dataframe.melt(
-        id_vars=['Thresholds', 'time'],
-        var_name='threshold_value',
-        value_name='qos_value',
-    )
-    print(cost_travel_qos_dataframe)
+    travel_distance = dynamic_dataset['TraveledDistance[mean]'].to_dataframe()
+    travel_distance.rename({'TraveledDistance[mean]': 'TraveledDistance'}, axis=1, inplace=True)
+    travel_distance = travel_distance.rolling(180).sum().diff()
+    print(travel_distance)
 
-    cost_travel_qos_plot = (
-        so.Plot(cost_travel_qos_dataframe, x='time', y='qos_value', color='Thresholds')
-        .add(so.Line())
-        .layout(size=(15, 5))
-    )
-    cost_travel_qos_plot.show()
+    # cost_travel_qos = dynamic_dataset[['TraveledDistanceLastHour[mean]', 'CloudCostPerHour[sum]']]
+    # cost_travel_qos = (cost_travel_qos.assign(
+    #     qos=lambda x: x['TraveledDistanceLastTenMinutes[mean]'] / x['CloudCostPerHour[sum]']
+    # ))
+    # cost_travel_qos_dataframe = cost_travel_qos.to_dataframe().reset_index()
+    # cost_travel_qos_dataframe = (cost_travel_qos_dataframe
+    #                              .drop(columns=["CloudCostPerHour[sum]", "TraveledDistanceLastHour[mean]", "SwapPolicy"]))
+    # cost_travel_qos_dataframe = cost_travel_qos_dataframe.melt(
+    #     id_vars=['Thresholds', 'time'],
+    #     var_name='threshold_value',
+    #     value_name='qos_value',
+    # )
+    # print(cost_travel_qos_dataframe)
+    #
+    # cost_travel_qos_plot = (
+    #     so.Plot(cost_travel_qos_dataframe, x='time', y='qos_value', color='Thresholds')
+    #     .add(so.Line())
+    #     .layout(size=(15, 5))
+    # )
+    # cost_travel_qos_plot.show()
 
     # new_values = ['device', 'cloud']
     #

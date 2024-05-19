@@ -32,6 +32,7 @@ class PulverizationAction<T>(
     private val SmartphoneCharging by molecule()
     private val WearableCharging by molecule()
     private val SmartphoneComponentsTime by molecule()
+    private val SmartphoneRechargeCount by molecule()
     private val WearableComponentsTime by molecule()
     private val SmartphonePower by molecule()
     private val WearablePower by molecule()
@@ -77,8 +78,8 @@ class PulverizationAction<T>(
         initializeNode(swapPolicy)
 
         // Uncomment to enable charging bo devices
-//        if (smartphoneConsumptionModel.isCharging()) wearableConsumptionModel?.setCharging(true)
-//        if (wearableConsumptionModel?.isCharging() == true) smartphoneConsumptionModel.setCharging(true)
+        if (smartphoneConsumptionModel.isCharging()) wearableConsumptionModel?.setCharging(true)
+        if (wearableConsumptionModel?.isCharging() == true) smartphoneConsumptionModel.setCharging(true)
 
         val isSmartphoneCharging = smartphoneConsumptionModel.isCharging()
         val isWearableCharging = wearableConsumptionModel?.isCharging() ?: false
@@ -90,6 +91,9 @@ class PulverizationAction<T>(
             node.setConcentration(SmartphoneCharging, false as T)
             node.setConcentration(SmartphonePower, (smartphonePower * delta) as T)
         } else {
+            if (node.getConcentration(SmartphoneCharging) == false) {
+                node.setConcentration(SmartphoneRechargeCount, (node.getConcentration(SmartphoneRechargeCount) as Int + 1) as T)
+            }
             smartphoneConsumptionModel.rechargeStep(currentTime)
             node.setConcentration(SmartphoneCharging, true as T)
         }
@@ -185,8 +189,10 @@ class PulverizationAction<T>(
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun initializeNode(scenario: String) {
         if (!isFirstExecution) {
+            node.setConcentration(SmartphoneRechargeCount, 0 as T)
             smartphoneConsumptionModel.initializeCapacityRandomly()
             wearableConsumptionModel?.initializeCapacityRandomly()
             setupGpsAllocation(scenario)
@@ -199,11 +205,11 @@ class PulverizationAction<T>(
             "smartphone", "none" -> Unit
             "wearable", "hybrid" -> {
                 wearableConsumptionModel?.let { wearableModel ->
-                    // println("Node ${node.id} has a wearable, moving GPS to wearable")
+//                    println("Node ${node.id} has a wearable, moving GPS to wearable")
                     val gpsComponent = smartphoneConsumptionModel.getActiveComponents().filterIsInstance<GpsSensor>().first()
                     smartphoneConsumptionModel.removeActiveComponent(node.id, gpsComponent)
                     wearableModel.setActiveComponent(node.id, gpsComponent)
-                } // ?: println("Node ${node.id} has no wearable, GPS will remain in smartphone")
+                } ?: println("Node ${node.id} has no wearable, GPS will remain in smartphone")
             }
             else -> error("Invalid scenario: $scenario")
         }

@@ -502,14 +502,14 @@ if __name__ == '__main__':
         '[30.0, 100.0]': r'$\Updownarrow_{30\%}$',
         '[40.0, 100.0]': r'$\Updownarrow_{40\%}$',
     }
-    ordered_thresholds = ['[0.0, 0.0]', '[20.0, 100.0]', '[30.0, 100.0]', '[40.0, 100.0]', '[100.0, 100.0]']
+    # ordered_thresholds = ['[0.0, 0.0]', '[20.0, 100.0]', '[30.0, 100.0]', '[40.0, 100.0]', '[100.0, 100.0]']
+    thresholds = [r'$\Downarrow$', r'$\Uparrow$', r'$\Updownarrow_{20\%}$', r'$\Updownarrow_{30\%}$', r'$\Updownarrow_{40\%}$']
+    thresholds_ordered = [r'$\Downarrow$', r'$\Updownarrow_{20\%}$', r'$\Updownarrow_{30\%}$', r'$\Updownarrow_{40\%}$', r'$\Uparrow$']
     ordered_policies = ['smartphone', 'hybrid', 'wearable']
 
-    def update_ticks(x, _):
-        return labels_thresholds[ordered_thresholds[int(x)]]
-
     dynamic_dataset = means['dynamic']
-    dynamic_dataset = dynamic_dataset.reindex(Thresholds=ordered_thresholds)
+    dynamic_dataset.coords['Thresholds'] = thresholds
+    dynamic_dataset = dynamic_dataset.reindex(Thresholds=thresholds_ordered)
     dynamic_dataset = dynamic_dataset.reindex(SwapPolicy=ordered_policies)
 
     window_in_seconds = 1800  # 30 minutes window
@@ -518,14 +518,12 @@ if __name__ == '__main__':
     rows_per_window = math.ceil(window_in_seconds / (dynamic_dataset['time'].diff(dim='time').mean()))
     travel_distance = travel_distance.rolling(window=rows_per_window).apply(lambda x: x.iloc[-1] - x.iloc[0])
 
-    travel_plot = plt.figure(figsize=(20, 4), layout="tight")
-    (
+    travel_plot = (
         so.Plot(travel_distance, x='time', y='TraveledDistance', color='Thresholds')
-        .on(travel_plot)
         .add(so.Line(), so.Agg())
         .add(so.Band())
         .facet("SwapPolicy")
-        .layout(engine='tight')
+        .layout(engine='tight', size=(20, 4))
         .scale(color='colorblind')
         .label(
             x="Time (s)",
@@ -534,22 +532,28 @@ if __name__ == '__main__':
         )
         .plot()
     )
-    legend = travel_plot.legends.pop(0)
-    travel_plot.legend(
-        legend.legend_handles, [labels_thresholds[t.get_text()] for t in legend.texts],
-        title=r"$\beta$ - Offload Thresholds",
+    travel_plot.save(f"{output_directory}/custom/travel_distance.pdf", bbox_inches="tight")
+
+    max_traveled_distance = dynamic_dataset['TraveledDistance[mean]'].max(dim='time').to_dataframe()
+    max_traveled_distance.rename({'TraveledDistance[mean]': 'TraveledDistance'}, axis=1, inplace=True)
+    max_traveled_distance_plot = (
+        so.Plot(max_traveled_distance, x='Thresholds', y='TraveledDistance', color='SwapPolicy')
+        .add(so.Bar(), so.Agg(), so.Dodge())
+        .add(so.Range(), so.Est(errorbar="sd"), so.Dodge())
+        .limit(y=(25000, None))
+        .layout(engine='tight')
+        .scale(color='colorblind')
+        .label(y="Traveled Distance (m)")
+        .plot()
     )
-    sns.move_legend(travel_plot, loc="lower center", bbox_to_anchor=(0.76, 0.20))
-    travel_plot.show()
-    travel_plot.savefig(f"{output_directory}/custom/travel_distance.pdf", bbox_inches="tight")
+    max_traveled_distance_plot.save(f"{output_directory}/custom/max_traveled_distance.pdf", bbox_inches="tight")
+    # End plot traveled distance ---------------------------------------------------------------------------------------
 
     cloud_cost = dynamic_dataset['CloudCost[sum]']
     cloud_cost = cloud_cost.max(dim='time').to_dataframe()
     cloud_cost.rename({'CloudCost[sum]': 'CloudCost'}, axis=1, inplace=True)
-    cloud_cost_plot = plt.figure(figsize=(6, 4), layout="tight")
-    (
+    cloud_cost_plot = (
         so.Plot(cloud_cost, x='Thresholds', y='CloudCost', color='SwapPolicy')
-        .on(cloud_cost_plot)
         .add(so.Bar(), so.Agg(), so.Dodge())
         .add(so.Range(), so.Est(errorbar="sd"), so.Dodge())
         .layout(engine='tight')
@@ -557,52 +561,22 @@ if __name__ == '__main__':
         .label(y=r"Cloud Cost (\$)")
         .plot()
     )
-    legend = cloud_cost_plot.legends.pop(0)
-    cloud_cost_plot.legend(
-        legend.legend_handles, [t.get_text() for t in legend.texts],
-        title=r"Swap Strategy",
-    )
-    sns.move_legend(cloud_cost_plot, loc="lower center", bbox_to_anchor=(0.25, 0.70))
-    cloud_cost_plot.axes[0].xaxis.set_major_formatter(mticker.FuncFormatter(update_ticks))
-    cloud_cost_plot.show()
-    cloud_cost_plot.savefig(f"{output_directory}/custom/cloud_cost.pdf", bbox_inches="tight")
+    cloud_cost_plot.save(f"{output_directory}/custom/cloud_cost.pdf", bbox_inches="tight")
+    # End plot cloud cost ----------------------------------------------------------------------------------------------
 
-    max_traveled_distance = dynamic_dataset['TraveledDistance[mean]'].max(dim='time').to_dataframe()
-    max_traveled_distance.rename({'TraveledDistance[mean]': 'TraveledDistance'}, axis=1, inplace=True)
-    max_traveled_distance_plot = plt.figure(figsize=(6, 4), layout="tight")
-    (
-        so.Plot(max_traveled_distance, x='Thresholds', y='TraveledDistance', color='SwapPolicy')
-        .on(max_traveled_distance_plot)
-        .add(so.Bar(), so.Agg(), so.Dodge())
-        .add(so.Range(), so.Est(errorbar="sd"), so.Dodge())
-        .layout(engine='tight')
-        .scale(color='colorblind')
-        .label(y="Traveled Distance (m)")
-        .plot()
-    )
-    legend = max_traveled_distance_plot.legends.pop(0)
-    max_traveled_distance_plot.legend(
-        legend.legend_handles, [t.get_text() for t in legend.texts],
-        title=r"Swap Strategy",
-    )
-    sns.move_legend(max_traveled_distance_plot, loc="lower center", bbox_to_anchor=(0.25, 0.70))
-    max_traveled_distance_plot.axes[0].xaxis.set_major_formatter(mticker.FuncFormatter(update_ticks))
-    max_traveled_distance_plot.show()
-    max_traveled_distance_plot.savefig(f"{output_directory}/custom/max_traveled_distance.pdf", bbox_inches="tight")
-
-    qos = dynamic_dataset[['TraveledDistance[mean]', 'CloudCost[sum]']]
+    qos = dynamic_dataset[['TraveledDistance[mean]', 'CloudCost[sum]', 'WearableCharging[mean]', 'SmartphoneCharging[mean]']]
     qos = qos.to_dataframe()
     traveled_window = qos['TraveledDistance[mean]'].rolling(window=rows_per_window).apply(lambda x: x.iloc[-1] - x.iloc[0])
     cost_window = qos['CloudCost[sum]'].rolling(window=rows_per_window).apply(lambda x: x.iloc[-1] - x.iloc[0])
-    qos['QoS'] = traveled_window / cost_window
-    qos_plot = plt.figure(figsize=(20, 4), layout="tight")
-    (
+    smartphone_charging = qos['SmartphoneCharging[mean]'].rolling(window=rows_per_window).apply(lambda x: x.iloc[-1] - x.iloc[0])
+    wearable_charging = qos['WearableCharging[mean]'].rolling(window=rows_per_window).apply(lambda x: x.iloc[-1] - x.iloc[0])
+    qos['QoS'] = (traveled_window * (1 - smartphone_charging) * (1 - wearable_charging)) / cost_window
+    qos_plot = (
         so.Plot(qos, x='time', y='QoS', color='Thresholds')
-        .on(qos_plot)
         .add(so.Line(), so.Agg())
         .add(so.Band())
         .facet("SwapPolicy")
-        .layout(engine='tight')
+        .layout(engine='tight', size=(20, 4))
         .scale(color='colorblind')
         .label(
             x="Time (s)",
@@ -611,40 +585,33 @@ if __name__ == '__main__':
         )
         .plot()
     )
-    legend = qos_plot.legends.pop(0)
-    qos_plot.legend(
-        legend.legend_handles, [labels_thresholds[t.get_text()] for t in legend.texts],
-        title=r"$\beta$ - Offload Thresholds",
+    qos_plot.save(f"{output_directory}/custom/qos.pdf", bbox_inches="tight")
+
+    qos_bar = (
+        so.Plot(qos, x='Thresholds', y='QoS', color='SwapPolicy')
+        .add(so.Bar(), so.Agg(), so.Dodge())
+        .add(so.Range(), so.Est(errorbar="sd"), so.Dodge())
+        .layout(engine='tight')
+        .scale(color='colorblind')
+        .label(y=r"QoS (m/\$)")
+        .plot()
     )
-    sns.move_legend(qos_plot, loc="lower center", bbox_to_anchor=(0.73, 0.23))
-    qos_plot.show()
-    qos_plot.savefig(f"{output_directory}/custom/qos.pdf", bbox_inches="tight")
+    qos_bar.save(f"{output_directory}/custom/qos_bar.pdf", bbox_inches="tight")
 
     charging = dynamic_dataset[['SmartphoneCharging[mean]', 'WearableCharging[mean]']].to_dataframe()
     charging.rename({'SmartphoneCharging[mean]': 'SmartphoneCharging'}, axis=1, inplace=True)
     charging.rename({'WearableCharging[mean]': 'WearableCharging'}, axis=1, inplace=True)
     charging['Charging'] = (1 - charging['SmartphoneCharging']) * (1 - charging['WearableCharging'])
-    charging_plot = plt.figure(figsize=(20, 4), layout="tight")
-    (
-        so.Plot(charging, x='time', y='Charging', color='Thresholds')
-        .on(charging_plot)
-        .add(so.Line(), so.Agg())
-        .add(so.Band())
-        .facet("SwapPolicy")
+    charging_plot = (
+        so.Plot(charging, x='Thresholds', y='Charging', color='SwapPolicy')
+        .add(so.Bar(), so.Agg(), so.Dodge())
+        .add(so.Range(), so.Est(errorbar="sd"), so.Dodge())
         .layout(engine='tight')
         .scale(color='colorblind')
         .label(
-            x="Time (s)",
+            x="Thresholds",
             y=r"Operative Devices (\%)",
-            title="Sensor Allocation = {}".format
         )
         .plot()
     )
-    legend = charging_plot.legends.pop(0)
-    charging_plot.legend(
-        legend.legend_handles, [labels_thresholds[t.get_text()] for t in legend.texts],
-        title=r"$\beta$ - Offload Thresholds",
-    )
-    sns.move_legend(charging_plot, loc="lower center", bbox_to_anchor=(0.95, 0.20))
-    charging_plot.show()
-    charging_plot.savefig(f"{output_directory}/custom/charging.pdf", bbox_inches="tight")
+    charging_plot.save(f"{output_directory}/custom/charging.pdf", bbox_inches="tight")

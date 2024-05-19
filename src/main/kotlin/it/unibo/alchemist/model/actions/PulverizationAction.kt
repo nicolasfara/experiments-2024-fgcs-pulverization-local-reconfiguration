@@ -76,7 +76,7 @@ class PulverizationAction<T>(
         val delta = currentTime - lastRead
         initializeNode(swapPolicy)
 
-        // Uncomment to enable charging both devices
+        // Uncomment to enable charging bo devices
 //        if (smartphoneConsumptionModel.isCharging()) wearableConsumptionModel?.setCharging(true)
 //        if (wearableConsumptionModel?.isCharging() == true) smartphoneConsumptionModel.setCharging(true)
 

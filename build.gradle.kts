@@ -90,6 +90,7 @@ File(rootProject.rootDir.path + "/src/main/yaml").listFiles()
             mainClass.set("it.unibo.alchemist.Alchemist")
             classpath = sourceSets["main"].runtimeClasspath
             args("run", it.absolutePath)
+            jvmArgs("-Dsun.java2d.opengl=false")
             javaLauncher.set(
                 javaToolchains.launcherFor {
                     languageVersion.set(JavaLanguageVersion.of(usesJvm))
@@ -115,16 +116,11 @@ File(rootProject.rootDir.path + "/src/main/yaml").listFiles()
             description = "Launches batch experiments for $capitalizedName"
             maxHeapSize = "${minOf(heap.toInt(), Runtime.getRuntime().availableProcessors() * taskSize)}m"
             File("data").mkdirs()
-            val variables = when (capitalizedName) {
-                "DynamicAllocation" -> /*"DeviceCount, */"Thresholds, SwapPolicy, Seed"
-                "StaticAllocation" -> "DeviceCount, MinThreshold, BehaviorInstructions, Seed"
-                else -> error("Unknown simulation $capitalizedName")
-            }
             args("--override",
                 """
                     launcher: {
                         parameters: {
-                            batch: [ $variables ],
+                            batch: [ Thresholds, SwapPolicy, Seed ],
                             showProgress: true,
                             autoStart: true,
                             parallelism: $threadCount,

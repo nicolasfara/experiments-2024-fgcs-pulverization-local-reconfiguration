@@ -9,6 +9,7 @@ interface PowerManager {
     fun initializeCapacityRandomly(): Double
     fun currentCapacity(): Double
     fun isCharging(): Boolean
+    fun setCharging(charging: Boolean)
 }
 
 class PowerManagerImpl(
@@ -18,7 +19,7 @@ class PowerManagerImpl(
     private val averageRechargeTime: Double,
 ) : PowerManager {
     private var currentCapacity = initialBatteryCapacity
-    private var isCharging = random.nextDouble() < 0.9
+    private var isCharging = random.nextDouble() > 0.9
     private var lastTimeUpdate = 0.0
     private val negativeExponential = ExponentialDistribution(random, 600.0)
     private var chargingConditionDelta = negativeExponential.sample()
@@ -54,6 +55,9 @@ class PowerManagerImpl(
 
     override fun currentCapacity(): Double = currentCapacity
     override fun isCharging(): Boolean = isCharging
+    override fun setCharging(charging: Boolean) {
+        isCharging = charging
+    }
 
     private fun randomInitializeBatteryCapacity(maxCapacity: Double): Double {
         val sixtyPercent = 0.6 * maxCapacity

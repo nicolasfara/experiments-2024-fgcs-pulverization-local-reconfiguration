@@ -76,6 +76,10 @@ class PulverizationAction<T>(
         val delta = currentTime - lastRead
         initializeNode(swapPolicy)
 
+        // Uncomment to enable charging both devices
+//        if (smartphoneConsumptionModel.isCharging()) wearableConsumptionModel?.setCharging(true)
+//        if (wearableConsumptionModel?.isCharging() == true) smartphoneConsumptionModel.setCharging(true)
+
         val isSmartphoneCharging = smartphoneConsumptionModel.isCharging()
         val isWearableCharging = wearableConsumptionModel?.isCharging() ?: false
         val isCharging = isSmartphoneCharging || isWearableCharging
@@ -120,15 +124,8 @@ class PulverizationAction<T>(
         }
         // Stop moving if no battery left
         if (currentSmartphoneCapacity <= 0.0 || currentWearableCapacity <= 0.0 || isCharging) {
-//            if (node.getConcentration(IsMoving) as Boolean) {
-//                println("Node ${node.id} stop moving at time $currentTime")
-//                println("Node has traveled ${node.getConcentration(SimpleMolecule("TraveledDistance"))} meters")
-//            }
             node.setConcentration(IsMoving, false as T)
         } else {
-//            if (!(node.getConcentration(IsMoving) as Boolean)) {
-//                println("Node ${node.id} start moving at time $currentTime")
-//            }
             node.setConcentration(IsMoving, true as T)
         }
         manageSwapBetweenSmartphoneAndWearable()

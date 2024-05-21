@@ -489,10 +489,10 @@ if __name__ == '__main__':
 
     # sns.set(font_scale=2)
     so.Plot.config.theme.update(axes_style("whitegrid"))
-    so.Plot.config.theme["font.size"] = 8
-    so.Plot.config.theme["axes.titlesize"] = 16
-    so.Plot.config.theme["axes.labelsize"] = 14
-    so.Plot.config.theme["legend.fontsize"] = 14
+    so.Plot.config.theme["font.size"] = 10
+    so.Plot.config.theme["axes.titlesize"] = 18
+    so.Plot.config.theme["axes.labelsize"] = 16
+    so.Plot.config.theme["legend.fontsize"] = 16
     # setup viridis seaborn
 
     thresholds = [r'$\Downarrow$', r'$\Updownarrow_{10\%}$', r'$\Uparrow$', r'$\Updownarrow_{20\%}$', r'$\Updownarrow_{30\%}$', r'$\Updownarrow_{40\%}$']
@@ -543,6 +543,7 @@ if __name__ == '__main__':
 
     cloud_cost = dynamic_dataset['CloudCost[sum]']
     cloud_cost = cloud_cost.max(dim='time').to_dataframe()
+    cloud_cost = cloud_cost / (maxTime / 3600)
     cloud_cost.rename({'CloudCost[sum]': 'CloudCost'}, axis=1, inplace=True)
     cloud_cost_plot = (
         so.Plot(cloud_cost, x='Thresholds', y='CloudCost', color='SwapPolicy')
@@ -550,7 +551,7 @@ if __name__ == '__main__':
         .add(so.Range(), so.Est(errorbar="sd"), so.Dodge())
         .layout(engine='tight')
         .scale(color='viridis')
-        .label(y=r"Cloud Cost (\$)")
+        .label(y=r"$\$_{cloud} (\$/h)$")
         .plot()
     )
     cloud_cost_plot.save(f"{output_directory}/custom/cloud_cost.pdf", bbox_inches="tight")
@@ -612,11 +613,12 @@ if __name__ == '__main__':
     charging_plot.save(f"{output_directory}/custom/charging.pdf", bbox_inches="tight")
     # End plot QoS -----------------------------------------------------------------------------------------------------
 
-    power_consumption = dynamic_dataset[['SmartphonePower[mean]', 'WearablePower[mean]', 'CloudPower[mean]']].to_dataframe()
+    power_consumption = dynamic_dataset.sum(dim='time')[['SmartphonePower[mean]', 'WearablePower[mean]', 'CloudPower[mean]']].to_dataframe()
     power_consumption.rename({'SmartphonePower[mean]': 'SmartphonePowerConsumption'}, axis=1, inplace=True)
     power_consumption.rename({'WearablePower[mean]': 'WearablePowerConsumption'}, axis=1, inplace=True)
     power_consumption.rename({'CloudPower[mean]': 'CloudPower'}, axis=1, inplace=True)
     power_consumption['PowerConsumption'] = power_consumption['SmartphonePowerConsumption'] + power_consumption['WearablePowerConsumption'] + power_consumption['CloudPower']
+    power_consumption['PowerConsumption'] = power_consumption['PowerConsumption'] / (maxTime / 3600)
 
     power_consumption_plot = (
         so.Plot(power_consumption, x='Thresholds', y='PowerConsumption', color='SwapPolicy')
@@ -626,7 +628,7 @@ if __name__ == '__main__':
         .scale(color='viridis')
         .label(
             x="Thresholds",
-            y=r"Power Consumption (W)",
+            y=r"$P_{system} (W/h)$",
         )
         .plot()
     )

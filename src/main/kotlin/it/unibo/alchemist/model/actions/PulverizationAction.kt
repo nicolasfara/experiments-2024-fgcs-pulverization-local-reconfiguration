@@ -193,7 +193,7 @@ class PulverizationAction<T>(
                 cloudConsumptionModel.setActiveComponent(node.id, it)
             } // ?: println("Node ${node.id} has no behavior in smartphone, skipping behavior allocation")
         }
-        if (isCharging && (minThreshold != 0.0 && minThreshold != 100.0)) {
+        if (isCharging || minThreshold == 0.0) {
             val behavior = cloudConsumptionModel.getActiveComponents().filterIsInstance<Behavior>().firstOrNull()
             behavior?.let {
                 // println("Node ${node.id} has a behavior in cloud, moving it to smartphone")

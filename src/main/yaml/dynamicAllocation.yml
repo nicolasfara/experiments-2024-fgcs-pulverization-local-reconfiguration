@@ -3,7 +3,7 @@ incarnation: protelis
 variables:
   Seed: &Seed
     min: 0
-    max: 2
+    max: 10
     step: 1
     default: 100
   ConnectionDistance: &ConnectionDistance
@@ -63,7 +63,7 @@ variables:
     formula: 1.5 # minutes
   # --------------- Simulation Variables ---------------
   DeviceCount:
-    formula: 1
+    formula: 100
 #    type: ArbitraryVariable
 #    parameters: [100, [100, 300]]
   Thresholds: &Thresholds
@@ -71,7 +71,7 @@ variables:
     parameters: [[100.0, 100.0], [[0.0, 0.0], [10.0, 100.0], [20.0, 100.0], [30.0, 100.0], [40.0, 100.0], [100.0, 100.0]]]
   SwapPolicy: &SwapPolicy
     type: ArbitraryVariable
-    parameters: [hybrid, [smartphone, wearable, hybrid]] # swap when discharged, or at fixed intervals (5% of battery each)
+    parameters: [wearable, [smartphone, wearable, hybrid]] # swap when discharged, or at fixed intervals (5% of battery each)
   # -----------------------------------------------------
   PeopleWithSmartphoneAndWearable: &PeopleWithSmartphoneAndWearable
     language: kotlin

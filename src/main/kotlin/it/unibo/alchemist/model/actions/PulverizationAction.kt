@@ -201,6 +201,14 @@ class PulverizationAction<T>(
                 smartphoneConsumptionModel.setActiveComponent(node.id, it)
             } // ?: println("Node ${node.id} has no behavior in cloud, skipping behavior allocation")
         }
+        if (minThreshold == 100.0) {
+            val behavior = smartphoneConsumptionModel.getActiveComponents().filterIsInstance<Behavior>().firstOrNull()
+            behavior?.let {
+                // println("Node ${node.id} has a behavior in smartphone, moving it to cloud")
+                smartphoneConsumptionModel.removeActiveComponent(node.id, it)
+                cloudConsumptionModel.setActiveComponent(node.id, it)
+            } // ?: println("Node ${node.id} has no behavior in smartphone, skipping behavior allocation")
+        }
     }
 
     @Suppress("UNCHECKED_CAST")

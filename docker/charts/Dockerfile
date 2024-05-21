@@ -6,5 +6,5 @@ COPY process.py ./
 COPY requirements.txt ./
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
-RUN apt install texlive-latex-extra texlive-fonts-recommended dvipng cm-super
+RUN pip install latex
 CMD python process.py

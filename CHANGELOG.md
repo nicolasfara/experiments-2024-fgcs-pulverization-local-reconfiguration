@@ -1,3 +1,28 @@
+## [1.11.3](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.11.2...1.11.3) (2024-05-21)
+
+
+### Bug Fixes
+
+* fix recharge condition ([e0fb31f](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/e0fb31f6c27ccda400d90bf1492e269f0cc114de))
+* fix simulation ([334f0a2](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/334f0a2db8005f08a9fbcfdc936479875b438e9b))
+* recharge policy ([4f5dcf1](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/4f5dcf104d796e2ca3039051b0a4ceda6a7445c8))
+* solve some bugs ([d8c766d](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/d8c766dbaa0fcaa94ec7f3ef240db9cbe471c4c6))
+
+
+### Build and continuous integration
+
+* install latex ([60afee0](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/60afee0f977af7bc5eabcd22e5d44ddf9e6e36a6))
+
+
+### General maintenance
+
+* add new generated data ([5dafcc3](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/5dafcc3ecdb2a760274fbdd0883d7dffa4c93549))
+* improve charts ([008522f](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/008522f425ffd485d3a5424e26403d05a6e5d426))
+* install latex ([135e5dc](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/135e5dca58abf4ea580b5655c0d0f8c1eef0acdf))
+* install latex in dockerg ([66f8a71](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/66f8a7196962b84bd50a8186cc5833a6b4a6ad7c))
+* **release:** update gradle.properties .env versions to 1.11.2 [skip ci] ([452cb4e](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/452cb4e809033789032f74975ce42181a12d1e3b))
+* remove sudo ([7effbe9](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/7effbe96edb4e0420e790429dda7c6f51030875d))
+
 ## [1.11.2](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.11.1...1.11.2) (2024-05-17)
 
 

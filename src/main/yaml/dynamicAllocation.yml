@@ -3,7 +3,7 @@ incarnation: protelis
 variables:
   Seed: &Seed
     min: 0
-    max: 1
+    max: 2
     step: 1
     default: 100
   ConnectionDistance: &ConnectionDistance
@@ -33,19 +33,19 @@ variables:
   SmartphoneEpi: &SmartphoneEpi
     formula: 5.50E-9 # nJoules
   WearableEpi: &WearableEpi
-    formula: 1.10E-9 # nJoules [Pixel Watch 2 -- Qualcomm SW5100]
+    formula: 9.97E-10 # nJoules [Pixel Watch 2 -- Qualcomm SW5100]
   CloudOsInstructions: &CloudOsInstructions
     formula: 50_000 # Instructions
   SmartphoneOsInstructions: &SmartphoneOsInstructions
-    formula: 28_409 # Instructions
+    formula: 31_250 # Instructions
   WearableOsInstructions: &WearableOsInstructions
-    formula: 9_800 # Instructions
+    formula: 3_124 # Instructions
   GpsSensorInstructions:
-    formula: 63_131 # Instructions !!!!!! FIXME
+    formula: 37_500 # Instructions !!!!!! FIXME
   CommunicationInstructions:
-    formula: 28_409 # Instructions !!!!!! FIXME
+    formula: 6_250 # Instructions !!!!!! FIXME
   BehaviorInstructions:
-    formula: 132_575 # Instructions !!!!!! FIXME
+    formula: 50_000 # Instructions !!!!!! FIXME
   SmartphoneStartupComponents: &SmartphoneStartupComponents
     language: kotlin
     formula: |

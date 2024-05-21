@@ -664,7 +664,7 @@ if __name__ == '__main__':
         .scale(color='viridis')
         .label(
             x="Thresholds",
-            y=r"Time Spent on Recharging (minutes)",
+            y=r"Time Spent Recharging (minutes)",
         )
         .plot()
     )

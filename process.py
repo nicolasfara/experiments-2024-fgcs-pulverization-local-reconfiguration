@@ -495,16 +495,8 @@ if __name__ == '__main__':
     so.Plot.config.theme["legend.fontsize"] = 14
     # setup viridis seaborn
 
-    labels_thresholds = {
-        '[0.0, 0.0]': r'$\Downarrow$',
-        '[100.0, 100.0]': r'$\Uparrow$',
-        '[20.0, 100.0]': r'$\Updownarrow_{20\%}$',
-        '[30.0, 100.0]': r'$\Updownarrow_{30\%}$',
-        '[40.0, 100.0]': r'$\Updownarrow_{40\%}$',
-    }
-    # ordered_thresholds = ['[0.0, 0.0]', '[20.0, 100.0]', '[30.0, 100.0]', '[40.0, 100.0]', '[100.0, 100.0]']
-    thresholds = [r'$\Downarrow$', r'$\Uparrow$', r'$\Updownarrow_{20\%}$', r'$\Updownarrow_{30\%}$', r'$\Updownarrow_{40\%}$']
-    thresholds_ordered = [r'$\Downarrow$', r'$\Updownarrow_{20\%}$', r'$\Updownarrow_{30\%}$', r'$\Updownarrow_{40\%}$', r'$\Uparrow$']
+    thresholds = [r'$\Downarrow$', r'$\Updownarrow_{10\%}$', r'$\Uparrow$', r'$\Updownarrow_{20\%}$', r'$\Updownarrow_{30\%}$', r'$\Updownarrow_{40\%}$']
+    thresholds_ordered = [r'$\Downarrow$', r'$\Updownarrow_{10\%}$', r'$\Updownarrow_{20\%}$', r'$\Updownarrow_{30\%}$', r'$\Updownarrow_{40\%}$', r'$\Uparrow$']
     ordered_policies = ['smartphone', 'hybrid', 'wearable']
 
     dynamic_dataset = means['dynamic']
@@ -524,7 +516,7 @@ if __name__ == '__main__':
         .add(so.Band())
         .facet("SwapPolicy")
         .layout(engine='tight', size=(20, 4))
-        .scale(color='colorblind')
+        .scale(color='viridis')
         .label(
             x="Time (s)",
             y="Traveled Distance (m)",
@@ -540,9 +532,9 @@ if __name__ == '__main__':
         so.Plot(max_traveled_distance, x='Thresholds', y='TraveledDistance', color='SwapPolicy')
         .add(so.Bar(), so.Agg(), so.Dodge())
         .add(so.Range(), so.Est(errorbar="sd"), so.Dodge())
-        .limit(y=(25000, None))
+        # .limit(y=(25000, None))
         .layout(engine='tight')
-        .scale(color='colorblind')
+        .scale(color='viridis')
         .label(y="Traveled Distance (m)")
         .plot()
     )
@@ -557,7 +549,7 @@ if __name__ == '__main__':
         .add(so.Bar(), so.Agg(), so.Dodge())
         .add(so.Range(), so.Est(errorbar="sd"), so.Dodge())
         .layout(engine='tight')
-        .scale(color='colorblind')
+        .scale(color='viridis')
         .label(y=r"Cloud Cost (\$)")
         .plot()
     )
@@ -577,7 +569,7 @@ if __name__ == '__main__':
         .add(so.Band())
         .facet("SwapPolicy")
         .layout(engine='tight', size=(20, 4))
-        .scale(color='colorblind')
+        .scale(color='viridis')
         .label(
             x="Time (s)",
             y=r"QoS (m/\$)",
@@ -587,12 +579,15 @@ if __name__ == '__main__':
     )
     qos_plot.save(f"{output_directory}/custom/qos.pdf", bbox_inches="tight")
 
+    qos_max = dynamic_dataset.max(dim='time').to_dataframe()
+    qos_max['QoS'] = qos_max['TraveledDistance[mean]'] / qos_max['CloudCost[sum]']
+
     qos_bar = (
-        so.Plot(qos, x='Thresholds', y='QoS', color='SwapPolicy')
+        so.Plot(qos_max, x='Thresholds', y='QoS', color='SwapPolicy')
         .add(so.Bar(), so.Agg(), so.Dodge())
         .add(so.Range(), so.Est(errorbar="sd"), so.Dodge())
         .layout(engine='tight')
-        .scale(color='colorblind')
+        .scale(color='viridis')
         .label(y=r"QoS (m/\$)")
         .plot()
     )
@@ -607,7 +602,7 @@ if __name__ == '__main__':
         .add(so.Bar(), so.Agg(), so.Dodge())
         .add(so.Range(), so.Est(errorbar="sd"), so.Dodge())
         .layout(engine='tight')
-        .scale(color='colorblind')
+        .scale(color='viridis')
         .label(
             x="Thresholds",
             y=r"Operative Devices (\%)",
@@ -615,3 +610,83 @@ if __name__ == '__main__':
         .plot()
     )
     charging_plot.save(f"{output_directory}/custom/charging.pdf", bbox_inches="tight")
+    # End plot QoS -----------------------------------------------------------------------------------------------------
+
+    power_consumption = dynamic_dataset[['SmartphonePower[mean]', 'WearablePower[mean]', 'CloudPower[mean]']].to_dataframe()
+    power_consumption.rename({'SmartphonePower[mean]': 'SmartphonePowerConsumption'}, axis=1, inplace=True)
+    power_consumption.rename({'WearablePower[mean]': 'WearablePowerConsumption'}, axis=1, inplace=True)
+    power_consumption.rename({'CloudPower[mean]': 'CloudPower'}, axis=1, inplace=True)
+    power_consumption['PowerConsumption'] = power_consumption['SmartphonePowerConsumption'] + power_consumption['WearablePowerConsumption'] + power_consumption['CloudPower']
+
+    power_consumption_plot = (
+        so.Plot(power_consumption, x='Thresholds', y='PowerConsumption', color='SwapPolicy')
+        .add(so.Bar(), so.Agg(), so.Dodge())
+        .add(so.Range(), so.Est(errorbar="sd"), so.Dodge())
+        .layout(engine='tight')
+        .scale(color='viridis')
+        .label(
+            x="Thresholds",
+            y=r"Power Consumption (W)",
+        )
+        .plot()
+    )
+    power_consumption_plot.save(f"{output_directory}/custom/power_consumption.pdf", bbox_inches="tight")
+    # End plot power consumption ---------------------------------------------------------------------------------------
+
+    # cost_wearable = dynamic_dataset[['PercentageSensorInWearable', 'CloudCost[sum]']].to_dataframe()
+    # cost_wearable.rename({'CloudCost[sum]': 'CloudCost'}, axis=1, inplace=True)
+    # cost_wearable_plot = (
+    #     so.Plot(cost_wearable, x='PercentageSensorInWearable', y='CloudCost', color='Thresholds')
+    #     .add(so.Line(), so.Agg())
+    #     .add(so.Band())
+    #     .layout(engine='tight', size=(20, 4))
+    #     .facet("SwapPolicy")
+    #     .scale(color='viridis')
+    #     .label(
+    #         x="Percentage of Sensors in Wearable",
+    #         y=r"Cloud Cost (\$)",
+    #         title="Sensor Allocation = {}".format
+    #     )
+    #     .plot()
+    # )
+    # cost_wearable_plot.save(f"{output_directory}/custom/cost_wearable.pdf", bbox_inches="tight")
+    # End plot cost wearable -------------------------------------------------------------------------------------------
+
+    charging_time = dynamic_dataset.max(dim='time')[['SmartphoneRechargeTime[mean]']].to_dataframe()
+    charging_time.rename({'SmartphoneRechargeTime[mean]': 'ChargingTime'}, axis=1, inplace=True)
+    charging_time = charging_time / 60
+
+    charging_time_plot = (
+        so.Plot(charging_time, x='Thresholds', y='ChargingTime', color='SwapPolicy')
+        .add(so.Bar(), so.Agg(), so.Dodge())
+        .add(so.Range(), so.Est(errorbar="sd"), so.Dodge())
+        .layout(engine='tight')
+        .scale(color='viridis')
+        .label(
+            x="Thresholds",
+            y=r"Time Spent on Recharging (minutes)",
+        )
+        .plot()
+    )
+    charging_time_plot.save(f"{output_directory}/custom/charging_time.pdf", bbox_inches="tight")
+    # End plot charging time -------------------------------------------------------------------------------------------
+
+    performance = dynamic_dataset.max(dim='time')[['SmartphoneRechargeTime[mean]', 'CloudCost[sum]']].to_dataframe()
+    performance.rename({'SmartphoneRechargeTime[mean]': 'ChargingTime'}, axis=1, inplace=True)
+    performance.rename({'CloudCost[sum]': 'CloudCost'}, axis=1, inplace=True)
+    performance['Performance'] = (1 - (performance['ChargingTime'] / maxTime)) / performance['CloudCost']
+
+    performance_plot = (
+        so.Plot(performance, x='Thresholds', y='Performance', color='SwapPolicy')
+        .add(so.Bar(), so.Agg(), so.Dodge())
+        .add(so.Range(), so.Est(errorbar="sd"), so.Dodge())
+        .layout(engine='tight')
+        .scale(color='viridis')
+        .label(
+            x="Thresholds",
+            y=r"Performance",
+        )
+        .plot()
+    )
+    performance_plot.save(f"{output_directory}/custom/performance.pdf", bbox_inches="tight")
+    # End plot performance -------------------------------------------------------------------------------------------

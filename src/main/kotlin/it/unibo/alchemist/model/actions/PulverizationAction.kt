@@ -36,6 +36,8 @@ class PulverizationAction<T>(
     private val WearableComponentsTime by molecule()
     private val SmartphonePower by molecule()
     private val WearablePower by molecule()
+    private val WearableRechargeTime by molecule()
+    private val SmartphoneRechargeTime by molecule()
 
     private val minThreshold by lazy {
         require(thresholds.count() == 2) { "Thresholds must contain exactly two values" }
@@ -78,8 +80,18 @@ class PulverizationAction<T>(
         initializeNode(swapPolicy)
 
         // Uncomment to enable charging bo devices
-        if (smartphoneConsumptionModel.isCharging()) wearableConsumptionModel?.setCharging(true)
-        if (wearableConsumptionModel?.isCharging() == true) smartphoneConsumptionModel.setCharging(true)
+        if (smartphoneConsumptionModel.isCharging()) {
+            wearableConsumptionModel?.setCharging(true)
+            if (toPercentage(wearableConsumptionModel!!.currentCapacity(), wearableCapacity) < 100.0) {
+                wearableConsumptionModel!!.setCharging(true)
+            }
+        }
+        if (wearableConsumptionModel?.isCharging() == true) {
+            smartphoneConsumptionModel.setCharging(true)
+            if (toPercentage(smartphoneConsumptionModel.currentCapacity(), smartphoneCapacity) < 100.0) {
+                smartphoneConsumptionModel.setCharging(true)
+            }
+        }
 
         val isSmartphoneCharging = smartphoneConsumptionModel.isCharging()
         val isWearableCharging = wearableConsumptionModel?.isCharging() ?: false
@@ -116,6 +128,7 @@ class PulverizationAction<T>(
         )
         node.setConcentration(SmartphoneCurrentCapacity, currentSmartphoneCapacity as T)
         node.setConcentration(SmartphoneComponents, smartphoneConsumptionModel.getActiveComponents() as T)
+        node.setConcentration(SmartphoneRechargeTime, smartphoneConsumptionModel.getRechargeTime() as T)
         // Write wearable battery status if present
         val currentWearableCapacity = wearableConsumptionModel?.currentCapacity() ?: Double.POSITIVE_INFINITY
         wearableConsumptionModel?.let {
@@ -125,6 +138,7 @@ class PulverizationAction<T>(
             )
             node.setConcentration(WearableComponents, it.getActiveComponents() as T)
             node.setConcentration(WearableCurrentCapacity, currentWearableCapacity as T)
+            node.setConcentration(WearableRechargeTime, it.getRechargeTime() as T)
         }
         // Stop moving if no battery left
         if (currentSmartphoneCapacity <= 0.0 || currentWearableCapacity <= 0.0 || isCharging) {

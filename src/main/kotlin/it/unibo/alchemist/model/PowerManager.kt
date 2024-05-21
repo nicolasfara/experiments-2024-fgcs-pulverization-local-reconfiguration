@@ -10,6 +10,7 @@ interface PowerManager {
     fun currentCapacity(): Double
     fun isCharging(): Boolean
     fun setCharging(charging: Boolean)
+    fun getRechargeTime(): Double
 }
 
 class PowerManagerImpl(
@@ -18,6 +19,7 @@ class PowerManagerImpl(
     private val maxCapacity: Double,
     private val averageRechargeTime: Double,
 ) : PowerManager {
+    private var rechargeTime = 0.0
     private var currentCapacity = initialBatteryCapacity
     private var isCharging = random.nextDouble() > 0.9
     private var lastTimeUpdate = 0.0
@@ -38,6 +40,7 @@ class PowerManagerImpl(
     override fun rechargeStep(currentTime: Double): Double {
         val delta = 1 // to be fix for the real time
         val newCapacity = currentCapacity + delta * ((maxCapacity / averageRechargeTime) / (3600 + chargingConditionDelta)) // 3000 mAh recharge rate
+        rechargeTime += delta
         currentCapacity = newCapacity
         if (newCapacity >= maxCapacity) {
             isCharging = false
@@ -53,6 +56,7 @@ class PowerManagerImpl(
         return initCapacity
     }
 
+    override fun getRechargeTime(): Double = rechargeTime
     override fun currentCapacity(): Double = currentCapacity
     override fun isCharging(): Boolean = isCharging
     override fun setCharging(charging: Boolean) {

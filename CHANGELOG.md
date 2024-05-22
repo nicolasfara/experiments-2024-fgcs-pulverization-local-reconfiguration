@@ -1,3 +1,15 @@
+## [1.11.4](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.11.3...1.11.4) (2024-05-22)
+
+
+### Bug Fixes
+
+* increase seed numbers ([6fdcdcc](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/6fdcdcc67b1c7d19432555eb1d8cbade75b2de6c))
+
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.11.3 [skip ci] ([70a761b](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/70a761b0b632bcbdff87d97dcaa74da3b63a4ec6))
+
 ## [1.11.3](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.11.2...1.11.3) (2024-05-21)
 
 

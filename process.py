@@ -525,6 +525,7 @@ if __name__ == '__main__':
         .plot()
     )
     travel_plot.save(f"{output_directory}/custom/travel_distance.pdf", bbox_inches="tight")
+    travel_plot.save(f"{output_directory}/custom/travel_distance.svg", bbox_inches="tight")
 
     max_traveled_distance = dynamic_dataset['TraveledDistance[mean]'].max(dim='time').to_dataframe()
     max_traveled_distance.rename({'TraveledDistance[mean]': 'TraveledDistance'}, axis=1, inplace=True)
@@ -539,6 +540,7 @@ if __name__ == '__main__':
         .plot()
     )
     max_traveled_distance_plot.save(f"{output_directory}/custom/max_traveled_distance.pdf", bbox_inches="tight")
+    max_traveled_distance_plot.save(f"{output_directory}/custom/max_traveled_distance.svg", bbox_inches="tight")
     # End plot traveled distance ---------------------------------------------------------------------------------------
 
     cloud_cost = dynamic_dataset['CloudCost[sum]']
@@ -555,6 +557,7 @@ if __name__ == '__main__':
         .plot()
     )
     cloud_cost_plot.save(f"{output_directory}/custom/cloud_cost.pdf", bbox_inches="tight")
+    cloud_cost_plot.save(f"{output_directory}/custom/cloud_cost.svg", bbox_inches="tight")
     # End plot cloud cost ----------------------------------------------------------------------------------------------
 
     qos = dynamic_dataset[['TraveledDistance[mean]', 'CloudCost[sum]', 'WearableCharging[mean]', 'SmartphoneCharging[mean]']]
@@ -579,6 +582,7 @@ if __name__ == '__main__':
         .plot()
     )
     qos_plot.save(f"{output_directory}/custom/qos.pdf", bbox_inches="tight")
+    qos_plot.save(f"{output_directory}/custom/qos.svg", bbox_inches="tight")
 
     qos_max = dynamic_dataset.max(dim='time').to_dataframe()
     qos_max['QoS'] = qos_max['TraveledDistance[mean]'] / qos_max['CloudCost[sum]']
@@ -611,6 +615,7 @@ if __name__ == '__main__':
         .plot()
     )
     charging_plot.save(f"{output_directory}/custom/charging.pdf", bbox_inches="tight")
+    charging_plot.save(f"{output_directory}/custom/charging.svg", bbox_inches="tight")
     # End plot QoS -----------------------------------------------------------------------------------------------------
 
     power_consumption = dynamic_dataset.sum(dim='time')[['SmartphonePower[mean]', 'WearablePower[mean]', 'CloudPower[mean]']].to_dataframe()
@@ -633,6 +638,7 @@ if __name__ == '__main__':
         .plot()
     )
     power_consumption_plot.save(f"{output_directory}/custom/power_consumption.pdf", bbox_inches="tight")
+    power_consumption_plot.save(f"{output_directory}/custom/power_consumption.svg", bbox_inches="tight")
     # End plot power consumption ---------------------------------------------------------------------------------------
 
     # cost_wearable = dynamic_dataset[['PercentageSensorInWearable', 'CloudCost[sum]']].to_dataframe()
@@ -671,6 +677,7 @@ if __name__ == '__main__':
         .plot()
     )
     charging_time_plot.save(f"{output_directory}/custom/charging_time.pdf", bbox_inches="tight")
+    charging_time_plot.save(f"{output_directory}/custom/charging_time.svg", bbox_inches="tight")
     # End plot charging time -------------------------------------------------------------------------------------------
 
     performance = dynamic_dataset.max(dim='time')[['SmartphoneRechargeTime[mean]', 'CloudCost[sum]']].to_dataframe()
@@ -691,4 +698,5 @@ if __name__ == '__main__':
         .plot()
     )
     performance_plot.save(f"{output_directory}/custom/performance.pdf", bbox_inches="tight")
+    performance_plot.save(f"{output_directory}/custom/performance.svg", bbox_inches="tight")
     # End plot performance -------------------------------------------------------------------------------------------

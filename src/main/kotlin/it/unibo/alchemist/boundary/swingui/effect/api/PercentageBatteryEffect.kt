@@ -12,10 +12,10 @@ class PercentageBatteryEffect : Effect {
         node?.getConcentration(SimpleMolecule("SmartphonePercentage"))?.let { smartphoneCharge ->
             val wearableCharge = node.getConcentration(SimpleMolecule("WearablePercentage")) as Double
             val value = ((smartphoneCharge as Double + wearableCharge) / 2).toFloat() / 300
-            val startx = x - 15 / 2
-            val starty = y - 15 / 2
+            val startx = x - 35 / 2
+            val starty = y - 35 / 2
             graphic?.color = Color.getHSBColor(value, 1.0f, 1.0f)
-            graphic?.fillOval(startx, starty, 15, 15)
+            graphic?.fillOval(startx, starty, 35, 35)
         }
     }
     override fun getColorSummary(): Color? = Color.GREEN

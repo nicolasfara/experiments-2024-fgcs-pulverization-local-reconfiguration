@@ -63,9 +63,9 @@ variables:
     formula: 1.5 # minutes
   # --------------- Simulation Variables ---------------
   DeviceCount:
-    formula: 100
-#    type: ArbitraryVariable
-#    parameters: [100, [100, 300]]
+#    formula: 300
+    type: ArbitraryVariable
+    parameters: [100, [100, 300]]
   Thresholds: &Thresholds
     type: ArbitraryVariable
     parameters: [[100.0, 100.0], [[0.0, 0.0], [10.0, 100.0], [20.0, 100.0], [30.0, 100.0], [40.0, 100.0], [100.0, 100.0]]]

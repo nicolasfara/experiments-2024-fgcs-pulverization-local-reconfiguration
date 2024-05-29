@@ -1,3 +1,20 @@
+## [1.11.5](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.11.4...1.11.5) (2024-05-29)
+
+
+### Bug Fixes
+
+* fix color ([febeb57](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/febeb57efa8572a5686ba64f9de0dc8d7726b4a5))
+
+
+### Build and continuous integration
+
+* add gui effects depenmdencies ([e3c9285](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/e3c9285e00a80a8c106851cb2d3e4a85876529a1))
+
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.11.4 [skip ci] ([ec3b280](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/ec3b2803198b3cd64ff1f93298506e712d6639ff))
+
 ## [1.11.4](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.11.3...1.11.4) (2024-05-22)
 
 

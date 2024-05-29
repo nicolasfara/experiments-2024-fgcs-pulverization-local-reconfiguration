@@ -1,9 +1,6 @@
-# Alchemist Experiments Bootstrap
+# Pulverisation With Local Dynamic Reconfiguration
 
-A customized Alchemist Primer with releases and data analysis ready.
-
-Upon generation of an experiment from this template:
-5. edit the DockerHub password in `.github/workflows/build-and-deploy.yml`;
+> Evaluation of the local reconfiguration rules for the PulvReAKt framework.
 
 ## Reproduce the entire experiment
 

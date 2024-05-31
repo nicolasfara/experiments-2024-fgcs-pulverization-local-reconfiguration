@@ -1,3 +1,15 @@
+## [1.11.6](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.11.5...1.11.6) (2024-05-31)
+
+
+### Bug Fixes
+
+* set to 300 the devices ([a5d95b4](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/a5d95b4cef03fc2f30ab7d21f4880e517d826dc0))
+
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.11.5 [skip ci] ([780897b](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/commit/780897b3fc81b19de67cb09d5f348696d9afdc90))
+
 ## [1.11.5](https://github.com/nicolasfara/experiments-2024-fgcs-pulverization-local-reconfiguration/compare/1.11.4...1.11.5) (2024-05-29)
 
 

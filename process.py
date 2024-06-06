@@ -495,8 +495,8 @@ if __name__ == '__main__':
     so.Plot.config.theme["legend.fontsize"] = 16
     # setup viridis seaborn
 
-    thresholds = [r'$\Downarrow$', r'$\Updownarrow_{10\%}$', r'$\Uparrow$', r'$\Updownarrow_{20\%}$', r'$\Updownarrow_{30\%}$', r'$\Updownarrow_{40\%}$']
-    thresholds_ordered = [r'$\Downarrow$', r'$\Updownarrow_{10\%}$', r'$\Updownarrow_{20\%}$', r'$\Updownarrow_{30\%}$', r'$\Updownarrow_{40\%}$', r'$\Uparrow$']
+    thresholds = [r'$\Updownarrow_{0}$', r'$\Updownarrow_{10}$', r'$\Updownarrow_{100}$', r'$\Updownarrow_{20}$', r'$\Updownarrow_{30}$', r'$\Updownarrow_{40}$']
+    thresholds_ordered = [r'$\Updownarrow_{0}$', r'$\Updownarrow_{10}$', r'$\Updownarrow_{20}$', r'$\Updownarrow_{30}$', r'$\Updownarrow_{40}$', r'$\Updownarrow_{100}$']
     ordered_policies = ['smartphone', 'hybrid', 'wearable']
 
     dynamic_dataset = means['dynamic']
